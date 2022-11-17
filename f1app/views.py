@@ -7,14 +7,14 @@ from django.http.response import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login
 from django.views.generic.edit import FormView
-from f1app.utils import RACE_OPINION
+from f1app.utils import NEW_RACE_OPINION
 from rest_framework import permissions, views, status
 from rest_framework.response import Response
 import logging
 import os
 
-from f1app.serializers import ConstructorSerializer, DriverOfTheDaySerializer, DriverSerializer, QualifyingResultSerializer, RaceResultSerializer, LoginSerializer, RaceSerializer
-from f1app.models import Constructor, Driver, Race, RaceData
+from f1app.serializers import ConstructorSerializer, DriverOfTheDaySerializer, DriverSerializer, QualifyingResultSerializer, RaceOpinionModelSerializer, RaceResultSerializer, LoginSerializer, RaceSerializer
+from f1app.models import Constructor, Driver, Race, RaceData, RaceOpinionModel
 
 logger = logging.getLogger("django")
 # Create your views here.
@@ -39,7 +39,6 @@ class YearRaceView(LoginRequiredMixin, views.APIView):
     login_url = "/"
     def get(self, request, year):
         request.session.get('years').insert(0, year)
-        logger.info(request.session.get('years'))
         if len(request.session.get('years')) > 5:
             request.session.get('years').pop()
         request.session.modified = True
@@ -185,62 +184,54 @@ class RaceOpinionFormView(FormView):
     template_name = 'race_opinion.html'
 
     def get(self, request, year):
-        round = 0
-        if self.request.session.get(RACE_OPINION) is None:
-            self.request.session[RACE_OPINION] = {
-                "year": year, 
-                "round": round
-            }
-            self.set_next_race()
-        if self.request.session.get(RACE_OPINION) is None:
-            return redirect(self.get_success_url(year))
+        year = (str)(year)
+        round = 1
+        if request.session.get(NEW_RACE_OPINION) is None:
+            request.session[NEW_RACE_OPINION] = {}
+            request.session[NEW_RACE_OPINION][year] = round
+            request.session.modified = True
+        if request.session.get(NEW_RACE_OPINION).get(year) is None:
+            request.session[NEW_RACE_OPINION][year] = round
+            request.session.modified = True
         return super(FormView, self).get(request, year)
     
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        opinion_dict = self.request.session[RACE_OPINION]
-        logger.info(opinion_dict)
-        race_instance = Race.get_race(opinion_dict['year'], opinion_dict['round'])
+        year = (str)(self.kwargs['year'])
+        round = self.request.session[NEW_RACE_OPINION][year]
+        race_instance = Race.get_race((int)(year), round)
         data['race_name'] = race_instance.official_name
         data['fields'] = RaceOpinionFormView.form_class._meta.fields
+        opinion = RaceOpinionModel.objects.get(user = self.request.user, race = race_instance)
+        data['opinion'] = RaceOpinionModelSerializer(opinion).data if opinion else None
         return data
 
     def get_success_url(self, year):
-        opinion_dict = self.request.session.get(RACE_OPINION)
-        if opinion_dict is None:
+        no_of_races = len(Race.objects.filter(year=(int)(year)))
+        if self.request.session.get(NEW_RACE_OPINION).get(year) < 1 or self.request.session.get(NEW_RACE_OPINION).get(year) > no_of_races:
+            del self.request.session[NEW_RACE_OPINION][year]
+            self.request.session.modified = True
+        round = self.request.session.get(NEW_RACE_OPINION).get(year)
+        if round is None:
             return f'/f1app/race/{year}/'
         else: 
             return f'/f1app/opinion/{year}/' 
 
-    def set_next_race(self):
-        opinion_dict = self.request.session.get(RACE_OPINION)
-        no_of_races = len(Race.objects.filter(year=opinion_dict['year']))
-        for i in range(1, no_of_races + 2):
-            opinion_dict['round'] = i
-            if no_of_races < opinion_dict['round']:
-                del self.request.session[RACE_OPINION]
-                return 
-            race = Race.get_race(opinion_dict['year'], opinion_dict['round'])
-            if race.is_rated(self.request.user) is False:
-                break
-        self.request.session[RACE_OPINION] = opinion_dict 
-        self.request.session.modified = True
-    
     def post(self, request, year):
+        year = (str)(year)
         form = RaceOpinionForm(request.POST)
-        opinion_dict = self.request.session[RACE_OPINION]
+        round = request.session[NEW_RACE_OPINION][year]
         if form.is_valid():
-            post = form.save(commit=False)
-            post.user = request.user
-            post.race = Race.get_race(year=opinion_dict['year'], round=opinion_dict['round'])
-            try:
-                post.full_clean(exclude=['id'])
-                post.save()
-            except ValidationError:
-                pass
-            self.set_next_race()
-            return redirect(self.get_success_url(year))
-        else: return redirect(self.get_success_url(year))
+            RaceOpinionModel.objects.update_or_create(
+                user = request.user, race = Race.get_race((int)(year), round),
+                defaults = form.cleaned_data
+            )
+        if request.method=='POST' and 'previous' in request.POST:
+            request.session[NEW_RACE_OPINION][year] = round - 1
+        if request.method=='POST' and 'next' in request.POST:
+            request.session[NEW_RACE_OPINION][year] = round + 1
+        request.session.modified = True
+        return redirect(self.get_success_url(year))
     
 # class FormExampleView(views.APIView):
     # permission_classes = (permissions.AllowAny,)

@@ -14,28 +14,18 @@
         {% for field in fields %}
             <fieldset id="{{ field }}">
                 <legend>Give your {{ field|pretty_name }}:</legend>
-                <input type="radio" class="radio-button-1" name="{{ field }}" value="1">
-                <label for="radio-button-1">1</label>
-                <input type="radio" class="radio-button-2" name="{{ field }}" value="2">
-                <label for="radio-button-2">2</label>
-                <input type="radio" class="radio-button-3" name="{{ field }}" value="3">
-                <label for="radio-button-3">3</label>
-                <input type="radio" class="radio-button-4" name="{{ field }}" value="4">
-                <label for="radio-button-4">4</label>
-                <input type="radio" class="radio-button-5" name="{{ field }}" value="5">
-                <label for="radio-button-5">5</label>
-                <input type="radio" class="radio-button-6" name="{{ field }}" value="6">
-                <label for="radio-button-6">6</label>
-                <input type="radio" class="radio-button-7" name="{{ field }}" value="7">
-                <label for="radio-button-7">7</label>
-                <input type="radio" class="radio-button-8" name="{{ field }}" value="8">
-                <label for="radio-button-8">8</label>
-                <input type="radio" class="radio-button-9" name="{{ field }}" value="9">
-                <label for="radio-button-9">9</label>
-                <input type="radio" class="radio-button-10" name="{{ field }}" value="10">
-                <label for="radio-button-10">10</label>
+                {% for i in 10|get_range %}
+                    {% if opinion and opinion|item:field == i %}
+                        <input type="radio" class="radio-button-{{ i }}" name="{{ field }}" value="{{ i }}" checked="checked">
+                        <label for="radio-button-{{ i }}">{{ i }}</label>
+                    {% else %}
+                        <input type="radio" class="radio-button-{{ i }}" name="{{ field }}" value="{{ i }}">
+                        <label for="radio-button-{{ i }}">{{ i }}</label>
+                    {% endif %}
+                {% endfor %}
             </fieldset>
         {% endfor %}
-        <input type="submit" value="Submit">
+        <input type="submit" name="previous" value="Previous" />
+        <input type="submit" name="next" value="Next" />
     </form>
 {% endblock %}

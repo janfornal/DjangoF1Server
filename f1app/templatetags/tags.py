@@ -41,6 +41,14 @@ def column_names(data):
     raise TypeError("Allowed argument types are: " + utils.serializer_helpers.ReturnList + " and " + collections.OrderedDict)
 
 @register.filter
+def get_range(a):
+    return range(1, a+1)
+
+@register.filter
+def item(dictionary, key):
+    return dictionary.get(key)
+
+@register.filter
 def get_item(dictionary, key):
     if(dictionary.__class__ == collections.OrderedDict):
         return dictionary.get(key)

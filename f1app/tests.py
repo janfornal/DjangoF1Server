@@ -23,7 +23,7 @@ def delete_race_opinion_key_from_active_sessions():
     logged_in = [s.session_key for s in sessions if s.get_decoded().get('_auth_user_id')]
     for session_key in logged_in:
         s = SessionStore(session_key=session_key)
-        del s['race_opinion']
+        del s['new_race_opinion']
         s.save()  
 
 def print_session_dictionaries():

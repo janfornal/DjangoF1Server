@@ -3,10 +3,11 @@ import collections
 
 from django.contrib.auth import authenticate
 from django.db import models
+from f1app.utils import RACE_OPINION_MODEL_FIELDS
 from rest_framework import serializers
 
 from f1app.field_options import *
-from f1app.models import Constructor, Driver, Race, RaceData
+from f1app.models import Constructor, Driver, Race, RaceData, RaceOpinionModel
 
 logger = logging.getLogger("django")
 
@@ -83,6 +84,12 @@ class DriverSerializer(NestedSerializer, serializers.ModelSerializer):
     class Meta:
         model = Driver
         fields = tuple(DRIVER_FIELDS)
+        depth = 1
+
+class RaceOpinionModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RaceOpinionModel
+        fields = tuple(RACE_OPINION_MODEL_FIELDS)
         depth = 1
 
 class LoginSerializer(serializers.Serializer):
