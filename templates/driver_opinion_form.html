@@ -1,0 +1,18 @@
+<form class="opinion-driver {{ x.driver }} {{ driver }}" method="POST">{% csrf_token %}
+    {% if x.driver %}
+    <div class="form-driver">
+        <input type="hidden" name="driver_id" value="{{ x.driver }}"> 
+    </div>
+    {% endif %}
+    <div class="form-rate">
+        <label for="id_rate">Rate:</label>
+        <input type="number" name="rate" class="id_rate">
+        <small class="rate_help" class="form-text text-muted">Enter here your note on a scale from 1 to 10.</small>
+    </div>
+    <div class="form-opinion">
+        <label for="id_extended_opinion">Extended opinion:</label>
+        <textarea cols="40" rows="4" type="text" name="extended_opinion" class="form-text text-muted" class="id_extended_opinion"></textarea>
+        <small class="opinion_help" class="form-text text-muted">Here you can give more detailed opinion on driver's performance</small>
+    </div>
+    <input type="submit" value="Submit">
+</form>

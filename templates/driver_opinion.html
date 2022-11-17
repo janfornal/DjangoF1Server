@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block style %}
+    {% load static %}
+
+    <link href="{% static 'f1app/css/driver_opinion.css' %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+    {% load tags %}
+    {% if driver %}
+        <h2 class='left'>Set rating of {{ driver|pretty_name }} for {{ race_name }}</h2>
+    
+        {% include "driver_opinion_form.html" %}
+    {% else %}
+        <h2 class='left'>Set rating of all drivers for {{ race_name }}</h2>
+        
+        <dl>
+            {% for x in drivers %}
+                <dt>Rating for: {{ x.driver }}</dt>
+                {% include "driver_opinion_form.html" %}
+            {% endfor %}
+        </dl>
+    {% endif %}
+    <script>     
+        {% for x in drivers %}
+            $(".{{ x.driver }} .id_rate").change(function () {       
+                console.log($(".{{ x.driver }} .id_rate"))
+                var rate = $(".{{ x.driver }} .id_rate").val()       
+                $.ajax({        
+                    url: '/f1app/opinion/check_rate/',         
+                    data: {           
+                        'rate': rate         
+                    },
+                    dataType: 'json',            
+                    success: function (data) {           
+                        var smallmsg = document.querySelectorAll(".{{ x.driver }} .rate_help")[0]
+                        if (!data.valid_rate) {             
+                            smallmsg.innerHTML="Incorrect rate"
+                            smallmsg.style.color="red"
+                        } else {
+                            smallmsg.innerHTML="Correct"
+                            smallmsg.style.color="green"
+                        }         
+                    }       
+                })      
+            })  
+        {% endfor %} 
+    </script>
+{% endblock %}

@@ -1,0 +1,20 @@
+body {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+}
+
+tr:nth-child(1) {
+    background-color: black;
+}
+tr:nth-child(2) {
+    background-color:yellow; 
+    color:black
+}
+tr:nth-child(3) {
+    background-color:grey; 
+}
+tr:nth-child(4) {
+    background-color:brown; 
+}

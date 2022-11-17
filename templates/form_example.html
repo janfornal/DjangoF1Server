@@ -1,0 +1,24 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User Information Form</title>
+</head>
+
+<body>
+<form action="" method="POST">
+{% csrf_token %}
+First name: <input type="text" name="first_name" value= '{% if form is not None %} {{ form.first_name }} {% endif %}'/><br><br>
+Last name: <input type="text" name="last_name" value= '{% if form is not None %} {{ form.last_name }} {% endif %}'/><br><br>
+City: <input type="text" name="city" value= '{% if form is not None %} {{ form.city }} {% endif %}'/><br><br>
+State: <input type="text" name="state" value= '{% if form is not None %} {{ form.state }} {% endif %}'/><br><br>
+<input type="Submit" name="Submit" value="Submit"/>
+</form>
+
+{% if submitbutton == "Submit"  %} 
+<h1> Your first name is {{ first_name }}</h1>
+<h1> Your last name is {{ last_name }}</h1>
+<h1> Your city is {{ city }} </h1>
+<h1> Your state is {{ state }} </h1>
+{% endif %}
+
+</body>

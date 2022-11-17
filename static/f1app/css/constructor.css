@@ -1,0 +1,11 @@
+.custom_container {
+    overflow: hidden;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+.main {
+    float: left;
+    width: 65%;
+}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block style %}
+    {% load static %}
+
+    <link href="{% static 'f1app/css/driver.css' %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+    {% load tags %}
+    <div class="custom_container">
+        <div class="main">
+            <h3>{{ data|get_item:"name" }}</h3>
+            <dl>
+                {% for key, value in data.items %}
+                    {% if key != 'id' and key|is_meta_field is False %}
+                        <hr>
+                        {% if key in list_of_extendables %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" onclick="collapsePanel('{{ data|get_item:"id" }}', $(this))">
+                                    <dt>{{ key|pretty_name }}</dt>
+                                    <dd>{{ value }}</dd>
+                                </div>
+                                <div id="{{key}}" class="panel-collapse collapse" role="tabpanel"></div>
+                            </div>
+                        {% elif value|is_ordered_dict %}
+                            <dt>{{ key|pretty_name }}</dt>
+                            <dd>{{ value|get_item:"std_name" }}</dd>
+                        {% else %}
+                            <dt>{{ key|pretty_name }}</dt>
+                            <dd>{{ value }}</dd>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </dl>
+        </div>
+        <div class="sidebar">
+            <img src="/static/f1app/img/{{ data|get_item:"id"|upper_underscore }}.jpg">
+        </div>
+    </div>
+
+    <div id="entity_name" style="display:none"></div>
+    <script src="{% static 'f1app/js/loadtables.js' %}"></script>
+    <script type="module">
+        document.getElementById("entity_name").innerHTML = 'driver'
+    </script>
+    <script src="{% static 'f1app/js/redirects.js' %}"></script>
+
+{% endblock %}

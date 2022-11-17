@@ -1,0 +1,15 @@
+body {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+}
+
+tr:nth-child(1) {
+    background-color: black;
+}
+
+tr:nth-child(n+2):hover td {
+	background-color: darkgrey;
+	color: black;
+}
