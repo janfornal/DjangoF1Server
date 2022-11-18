@@ -1,6 +1,8 @@
 from django.forms import ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import HttpResponse, redirect, render
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from f1app.field_options import *
 from f1app.forms import DriverOpinionForm, RaceOpinionForm
 from django.http.response import JsonResponse
@@ -8,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login
 from django.views.generic.edit import FormView
 from f1app.utils import NEW_RACE_OPINION
-from rest_framework import permissions, views, status
+from rest_framework import permissions, views, status, generics
 from rest_framework.response import Response
 import logging
 import os
@@ -48,94 +50,165 @@ class YearRaceView(LoginRequiredMixin, views.APIView):
             return render(request, 'year_race.html', {'data': serializer.data})
         return render(request, 'error_message.html')
 
-class RaceResultView(LoginRequiredMixin, views.APIView):
-    login_url = "/"
-    def get(self, request, year, no):
-        context = {
+class CustomListAPIView(generics.ListAPIView):
+    def get_serializer_context(self):
+        return {}
+
+    def list(self, request):
+        return super(generics.ListAPIView, self).list(request)
+
+class CustomListView(LoginRequiredMixin, ListView):
+    login_url = "/" ### loginrequiredmixin
+    template_name = "list_table.html"
+
+    @classmethod
+    def get_api_view_object(cls):
+        pass
+
+    def get_queryset(self): ### listapiview, według https://stackoverflow.com/questions/51169129/get-queryset-missing-1-required-positional-argument-request wystarczy listview
+        api_view_object = self.__class__.get_api_view_object()
+        api_view_object.setup(self.request, **self.kwargs)
+        return api_view_object.list(self.request).data
+
+class RaceResultAPIView(CustomListAPIView):
+    serializer_class = RaceResultSerializer
+
+    def get_serializer_context(self): ### listapiview
+        return {
             'delete_fields': ['race'],
             'add_fields': ['opinion']
         }
-        race = Race.objects.filter(year=year, round=no)
+
+    def get_queryset(self): ### listapiview, według https://stackoverflow.com/questions/51169129/get-queryset-missing-1-required-positional-argument-request wystarczy listview
+        race = Race.objects.filter(year=self.kwargs['year'], round=self.kwargs['no'])
         values = race.values_list('id', flat=True)
-        race_data = RaceData.objects.filter(race_id__in=values, type='RACE_RESULT')
-        serializer = RaceResultSerializer(race_data, many=True, context=context)
-        if len(race_data) > 0 and len(race) > 0:
-            return render(request, 'race_result.html', {"data": serializer.data, 'race': race[0]})        
-        return render(request, 'error_message.html')
+        return RaceData.objects.filter(race_id__in=values, type='RACE_RESULT')
 
-class ConstructorView(views.APIView):
-    login_url = "/"
-    def get(self, request, name):
-        constructor = Constructor.objects.filter(id=name)
+class RaceResultView(CustomListView):
+    template_name = "race_result.html" ### templateresponsemixin
+    
+    def get_api_view_object():
+        return RaceResultAPIView()
+
+    def get_context_data(self, **kwargs): ### multipleobjectmixin
+        data = super().get_context_data(**kwargs)
+        data['race'] = Race.get_race(self.kwargs['year'], self.kwargs['no'])
+        return data
+    
+    def get(self, request, year, no):
+        return super(ListView, self).get(request, year, no)    
+
+class ConstructorView(LoginRequiredMixin, DetailView):
+    login_url = "/" 
+    template_name = "constructor.html"
+    
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['list_of_extendables'] = ['total_pole_positions', 'total_race_wins']
+        return data
+    
+    def get_object(self): ### listapiview, według https://stackoverflow.com/questions/51169129/get-queryset-missing-1-required-positional-argument-request wystarczy listview
+        constructor = Constructor.objects.filter(id=self.kwargs['name'])
         serializer = ConstructorSerializer(constructor, many=True)
-        if len(constructor) > 0:
-            return render(request, 'constructor.html', {"data": serializer.data[0],
-                "list_of_extendables": ['total_pole_positions', 'total_race_wins']}) 
-        return render(request, 'error_message.html')
-
-class ConstructorPolePositionView(views.APIView):
-    login_url = "/"
+        return serializer.data[0]
+        
     def get(self, request, name):
-        driver_history = RaceData.objects.filter(constructor_id=name, type='QUALIFYING_RESULT', position_number=1)
-        serializer = QualifyingResultSerializer(driver_history,many=True)
-        if len(driver_history) > 0:
-            return render(request, 'race_table.html', {"data": serializer.data})
-        return render(request, 'error_message.html')
+        return super(DetailView, self).get(request, name)    
 
-class ConstructorWinView(views.APIView):
-    login_url = "/"
-    def get(self, request, name):
-        driver_history = RaceData.objects.filter(constructor_id=name, type='RACE_RESULT', position_number=1)
-        serializer = RaceResultSerializer(driver_history,many=True)
-        if len(driver_history) > 0:
-            return render(request, 'race_table.html', {"data": serializer.data})
-        return render(request, 'error_message.html')
+class ConstructorPolePositionAPIView(CustomListAPIView):
+    serializer_class = QualifyingResultSerializer
 
-class DriverView(views.APIView):
-    login_url = "/"
-    def get(self, request, name):
-        driver = Driver.objects.filter(id=name)
-        serializer = DriverSerializer(driver,many=True)
-        if len(driver) > 0:
-            return render(request, 'driver.html', {"data": serializer.data[0],
-                "list_of_extendables": ['total_pole_positions', 'total_race_starts', 'total_race_wins', 'total_driver_of_the_day']})
-        return render(request, 'error_message.html')
+    def get_queryset(self): 
+        return RaceData.objects.filter(constructor_id=self.kwargs['name'], type='QUALIFYING_RESULT', position_number=1)
 
-class DriverPolePositionView(views.APIView):
-    login_url = "/"
+class ConstructorPolePositionView(CustomListView):
+    def get_api_view_object():
+        return ConstructorPolePositionAPIView()
+        
     def get(self, request, name):
-        driver_history = RaceData.objects.filter(driver_id=name, type='QUALIFYING_RESULT', position_number=1)
-        serializer = QualifyingResultSerializer(driver_history,many=True)
-        if len(driver_history) > 0:
-            return render(request, 'race_table.html', {"data": serializer.data})
-        return render(request, 'error_message.html')
+        return super(ListView, self).get(request, name)    
 
-class DriverWinView(views.APIView):
-    login_url = "/"
-    def get(self, request, name):
-        driver_history = RaceData.objects.filter(driver_id=name, type='RACE_RESULT', position_number=1)
-        serializer = RaceResultSerializer(driver_history,many=True)
-        if len(driver_history) > 0:
-            return render(request, 'race_table.html', {"data": serializer.data})
-        return render(request, 'error_message.html')
+class ConstructorWinAPIView(CustomListAPIView):
+    serializer_class = RaceResultSerializer
 
-class DriverRaceView(views.APIView):
-    login_url = "/"
-    def get(self, request, name):
-        driver_history = RaceData.objects.filter(driver_id=name, type='RACE_RESULT')
-        serializer = RaceResultSerializer(driver_history,many=True)
-        if len(driver_history) > 0:
-            return render(request, 'race_table.html', {"data": serializer.data})
-        return render(request, 'error_message.html')
+    def get_queryset(self): 
+        return RaceData.objects.filter(constructor_id=self.kwargs['name'], type='RACE_RESULT', position_number=1)
 
-class DriverOfTheDayView(views.APIView):
-    login_url = "/"
+class ConstructorWinView(CustomListView):
+    def get_api_view_object():
+        return ConstructorWinAPIView()
+        
     def get(self, request, name):
-        driver_history = RaceData.objects.filter(driver_id=name, type='DRIVER_OF_THE_DAY_RESULT', position_number=1)
-        serializer = DriverOfTheDaySerializer(driver_history,many=True)
-        if len(driver_history) > 0:
-            return render(request, 'race_table.html', {"data": serializer.data})
-        return render(request, 'error_message.html')
+        return super(ListView, self).get(request, name)    
+
+class DriverView(LoginRequiredMixin, DetailView):
+    login_url = "/" 
+    template_name = "driver.html"
+    
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['list_of_extendables'] = ['total_pole_positions', 'total_race_starts', 'total_race_wins', 'total_driver_of_the_day']
+        return data
+    
+    def get_object(self): ### listapiview, według https://stackoverflow.com/questions/51169129/get-queryset-missing-1-required-positional-argument-request wystarczy listview
+        constructor = Driver.objects.filter(id=self.kwargs['name'])
+        serializer = DriverSerializer(constructor, many=True)
+        return serializer.data[0]
+        
+    def get(self, request, name):
+        return super(DetailView, self).get(request, name)    
+
+class DriverPolePositionAPIView(CustomListAPIView):
+    serializer_class = QualifyingResultSerializer
+
+    def get_queryset(self): 
+        return RaceData.objects.filter(driver_id=self.kwargs['name'], type='QUALIFYING_RESULT', position_number=1)
+
+class DriverPolePositionView(CustomListView):
+    def get_api_view_object():
+        return DriverPolePositionAPIView()
+        
+    def get(self, request, name):
+        return super(ListView, self).get(request, name)    
+
+class DriverWinAPIView(CustomListAPIView):
+    serializer_class = RaceResultSerializer
+
+    def get_queryset(self): 
+        return RaceData.objects.filter(driver_id=self.kwargs['name'], type='RACE_RESULT', position_number=1)
+
+class DriverWinView(CustomListView):
+    def get_api_view_object():
+        return DriverWinAPIView()
+        
+    def get(self, request, name):
+        return super(ListView, self).get(request, name)    
+
+class DriverRaceAPIView(CustomListAPIView):
+    serializer_class = RaceResultSerializer
+
+    def get_queryset(self): 
+        return RaceData.objects.filter(driver_id=self.kwargs['name'], type='RACE_RESULT')
+
+class DriverRaceView(CustomListView):
+    def get_api_view_object():
+        return DriverRaceAPIView()
+        
+    def get(self, request, name):
+        return super(ListView, self).get(request, name)    
+
+class DriverOfTheDayAPIView(CustomListAPIView):
+    serializer_class = DriverOfTheDaySerializer
+
+    def get_queryset(self): 
+        return RaceData.objects.filter(driver_id=self.kwargs['name'], type='DRIVER_OF_THE_DAY_RESULT', position_number=1)
+
+class DriverOfTheDayView(CustomListView):
+    def get_api_view_object():
+        return DriverOfTheDayAPIView()
+        
+    def get(self, request, name):
+        return super(ListView, self).get(request, name)    
 
 class TerminalLoginView(views.APIView):
     # This view should be accessible also for unauthenticated users.
@@ -203,7 +276,7 @@ class RaceOpinionFormView(FormView):
         data['race_name'] = race_instance.official_name
         data['fields'] = RaceOpinionFormView.form_class._meta.fields
         opinion = RaceOpinionModel.objects.get(user = self.request.user, race = race_instance)
-        data['opinion'] = RaceOpinionModelSerializer(opinion).data if opinion else None
+        data['opinion'] = RaceOpinionModelSerializer(opinion).data
         return data
 
     def get_success_url(self, year):

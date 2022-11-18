@@ -10,14 +10,14 @@
     {% load tags %}
     <div class="custom_container">
         <div class="main">
-            <h3>{{ data|get_item:"name" }}</h3>
+            <h3>{{ object|get_item:"name" }}</h3>
             <dl>
-                {% for key, value in data.items %}
+                {% for key, value in object.items %}
                     {% if key != 'id' and key|is_meta_field is False %}
                         <hr>
                         {% if key in list_of_extendables %}
                             <div class="panel panel-default">
-                                <div class="panel-heading" role="tab" onclick="collapsePanel('{{ data|get_item:"id" }}', $(this))">
+                                <div class="panel-heading" role="tab" onclick="collapsePanel('{{ object|get_item:"id" }}', $(this))">
                                     <dt>{{ key|pretty_name }}</dt>
                                     <dd>{{ value }}</dd>
                                 </div>
@@ -35,7 +35,7 @@
             </dl>
         </div>
         <div class="sidebar">
-            <img src="/static/f1app/img/{{ data|get_item:"id"|upper_underscore }}.jpg">
+            <img src="/static/f1app/img/{{ object|get_item:"id"|upper_underscore }}.jpg">
         </div>
     </div>
 

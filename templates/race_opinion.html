@@ -15,7 +15,7 @@
             <fieldset id="{{ field }}">
                 <legend>Give your {{ field|pretty_name }}:</legend>
                 {% for i in 10|get_range %}
-                    {% if opinion and opinion|item:field == i %}
+                    {% if opinion|item:field == i %}
                         <input type="radio" class="radio-button-{{ i }}" name="{{ field }}" value="{{ i }}" checked="checked">
                         <label for="radio-button-{{ i }}">{{ i }}</label>
                     {% else %}

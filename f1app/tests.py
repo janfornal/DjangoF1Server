@@ -4,6 +4,8 @@ from f1app.models import *
 from django.contrib.sessions.models import Session
 from django.contrib.sessions.backends.db import SessionStore
 
+from f1app.views import ConstructorPolePositionAPIView
+
 # Create your tests here.
 
 def serialize_with_abstraction_level():
@@ -34,5 +36,9 @@ def print_session_dictionaries():
 def print_data_about_custom_user_from_username():
     user = User.objects.get(username = 'username2')
     print(user.__dict__)
+
+def get_list_from_constructor_pole_position_api_view():
+    api_view = ConstructorPolePositionAPIView()
+    logger.iapi_view.get_queryset()
 
 print_session_dictionaries()
