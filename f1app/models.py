@@ -469,8 +469,12 @@ class Race(models.Model):
     scheduled_distance = models.DecimalField(max_digits=10, decimal_places=5, blank=True, null=True)  # max_digits and decimal_places have been guessed, as this database handles decimal fields as float
 
     def is_rated(self, user):
-        races = RaceOpinionModel.objects.filter(race_id=self, user=user)
+        races = RaceOpinionModel.objects.filter(race=self, user=user)
         return len(races) > 0
+
+    def get_championship_rate(self, user):
+        rate = RaceOpinionModel.objects.get(race=self, user=user)
+        return rate.championship_rate
     
     @classmethod
     def get_race(cls, year, round):

@@ -8,7 +8,7 @@ urlpatterns=[
     path('', views.index, name='index'),
     path('race/',views.GeneralRaceView.as_view()),
     path('race/<int:year>/',views.YearRaceView.as_view()),
-    path('race/<int:year>/<int:no>/',views.RaceResultView.as_view()),
+    path('race/<int:year>/<int:no>/',views.GrandPrixResultView.as_view()),
     path('constructor/<str:name>/',views.ConstructorView.as_view()),
     path('constructor/<str:name>/total_pole_positions/',views.ConstructorPolePositionView.as_view()),
     path('constructor/<str:name>/total_race_wins/',views.ConstructorWinView.as_view()),

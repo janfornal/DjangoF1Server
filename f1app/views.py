@@ -56,10 +56,13 @@ class CustomListAPIView(generics.ListAPIView):
 
     def list(self, request):
         return super(generics.ListAPIView, self).list(request)
+    
+    def get(self, request):
+        return super(generics.ListAPIView, self).get(request)
 
 class CustomListView(LoginRequiredMixin, ListView):
     login_url = "/" ### loginrequiredmixin
-    template_name = "list_table.html"
+    template_name = "list_table.html" ### templateresponsemixin
 
     @classmethod
     def get_api_view_object(cls):
@@ -69,6 +72,25 @@ class CustomListView(LoginRequiredMixin, ListView):
         api_view_object = self.__class__.get_api_view_object()
         api_view_object.setup(self.request, **self.kwargs)
         return api_view_object.list(self.request).data
+    
+    def get(self, request, *args):
+        format = request.GET.get('format')
+        if format == 'json':
+            return JsonResponse(self.get_queryset(),safe=False)
+        return super(ListView, self).get(request, *args)
+
+class QualifyingResultAPIView(CustomListAPIView):
+    serializer_class = QualifyingResultSerializer
+
+    def get_serializer_context(self): ### listapiview
+        return {
+            'delete_fields': ['race'],
+        }
+
+    def get_queryset(self): ### listapiview, według https://stackoverflow.com/questions/51169129/get-queryset-missing-1-required-positional-argument-request wystarczy listview
+        race = Race.objects.filter(year=self.kwargs['year'], round=self.kwargs['no'])
+        values = race.values_list('id', flat=True)
+        return RaceData.objects.filter(race_id__in=values, type='QUALIFYING_RESULT')
 
 class RaceResultAPIView(CustomListAPIView):
     serializer_class = RaceResultSerializer
@@ -84,19 +106,33 @@ class RaceResultAPIView(CustomListAPIView):
         values = race.values_list('id', flat=True)
         return RaceData.objects.filter(race_id__in=values, type='RACE_RESULT')
 
-class RaceResultView(CustomListView):
-    template_name = "race_result.html" ### templateresponsemixin
-    
-    def get_api_view_object():
-        return RaceResultAPIView()
+class GrandPrixResultView(ListView):
+    login_url = "/" ### loginrequiredmixin
+    template_name = "race_result.html"
+    context_object_name = "race_list"
+
+    def get_qualifying_queryset(self):
+        api_view_object = QualifyingResultAPIView()
+        api_view_object.setup(self.request, **self.kwargs)
+        return api_view_object.list(self.request).data
 
     def get_context_data(self, **kwargs): ### multipleobjectmixin
         data = super().get_context_data(**kwargs)
         data['race'] = Race.get_race(self.kwargs['year'], self.kwargs['no'])
+        data['qualifying_list'] = self.get_qualifying_queryset()
+        logger.info(data['qualifying_list'])
         return data
     
+    def get_queryset(self): ### listapiview, według https://stackoverflow.com/questions/51169129/get-queryset-missing-1-required-positional-argument-request wystarczy listview
+        api_view_object = RaceResultAPIView()
+        api_view_object.setup(self.request, **self.kwargs)
+        return api_view_object.list(self.request).data
+
     def get(self, request, year, no):
-        return super(ListView, self).get(request, year, no)    
+        format = request.GET.get('format')
+        if format == 'json':
+            return JsonResponse(self.get_queryset(),safe=False)
+        return super(ListView, self).get(request, year, no)
 
 class ConstructorView(LoginRequiredMixin, DetailView):
     login_url = "/" 
@@ -126,7 +162,7 @@ class ConstructorPolePositionView(CustomListView):
         return ConstructorPolePositionAPIView()
         
     def get(self, request, name):
-        return super(ListView, self).get(request, name)    
+        return super().get(request, name)    
 
 class ConstructorWinAPIView(CustomListAPIView):
     serializer_class = RaceResultSerializer
@@ -139,7 +175,7 @@ class ConstructorWinView(CustomListView):
         return ConstructorWinAPIView()
         
     def get(self, request, name):
-        return super(ListView, self).get(request, name)    
+        return super().get(request, name)    
 
 class DriverView(LoginRequiredMixin, DetailView):
     login_url = "/" 
@@ -150,7 +186,7 @@ class DriverView(LoginRequiredMixin, DetailView):
         data['list_of_extendables'] = ['total_pole_positions', 'total_race_starts', 'total_race_wins', 'total_driver_of_the_day']
         return data
     
-    def get_object(self): ### listapiview, według https://stackoverflow.com/questions/51169129/get-queryset-missing-1-required-positional-argument-request wystarczy listview
+    def get_object(self):
         constructor = Driver.objects.filter(id=self.kwargs['name'])
         serializer = DriverSerializer(constructor, many=True)
         return serializer.data[0]
@@ -169,7 +205,7 @@ class DriverPolePositionView(CustomListView):
         return DriverPolePositionAPIView()
         
     def get(self, request, name):
-        return super(ListView, self).get(request, name)    
+        return super().get(request, name)    
 
 class DriverWinAPIView(CustomListAPIView):
     serializer_class = RaceResultSerializer
@@ -182,7 +218,7 @@ class DriverWinView(CustomListView):
         return DriverWinAPIView()
         
     def get(self, request, name):
-        return super(ListView, self).get(request, name)    
+        return super().get(request, name)    
 
 class DriverRaceAPIView(CustomListAPIView):
     serializer_class = RaceResultSerializer
@@ -195,7 +231,7 @@ class DriverRaceView(CustomListView):
         return DriverRaceAPIView()
         
     def get(self, request, name):
-        return super(ListView, self).get(request, name)    
+        return super().get(request, name)    
 
 class DriverOfTheDayAPIView(CustomListAPIView):
     serializer_class = DriverOfTheDaySerializer
@@ -208,7 +244,7 @@ class DriverOfTheDayView(CustomListView):
         return DriverOfTheDayAPIView()
         
     def get(self, request, name):
-        return super(ListView, self).get(request, name)    
+        return super().get(request, name)    
 
 class TerminalLoginView(views.APIView):
     # This view should be accessible also for unauthenticated users.

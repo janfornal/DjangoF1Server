@@ -153,12 +153,13 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Set Django's test runner to the custom class defined in runners.py
+TEST_RUNNER = 'f1app.runners.DiscoverRunner'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]

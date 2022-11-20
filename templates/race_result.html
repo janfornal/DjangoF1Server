@@ -9,5 +9,12 @@
 {% block content %}
     <h1>{{ race.official_name }}</h1>
 
-    {% include "list_table.html" %}
+    {% with object_list=qualifying_list %}
+        {% include "list_table.html" %}
+    {% endwith %}
+
+    {% with object_list=race_list %}
+        {% include "list_table.html" %}
+    {% endwith %}
+
 {% endblock %}

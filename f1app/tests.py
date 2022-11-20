@@ -1,44 +1,23 @@
-from datetime import datetime
-from f1app.serializers import *
+from django.test import TestCase
 from f1app.models import *
-from django.contrib.sessions.models import Session
-from django.contrib.sessions.backends.db import SessionStore
-
-from f1app.views import ConstructorPolePositionAPIView
+from django.contrib.auth.models import User
 
 # Create your tests here.
 
-def serialize_with_abstraction_level():
-    race = RaceData.objects.filter(race_id=1000)
-    race_result_serializer = RaceResultSerializer(race, many=True)
-    print(race_result_serializer.data[0])
-    print(race_result_serializer.data[0].get('std_name'))
-
-def serialize_constructor_model():
-    driver_history = RaceData.objects.filter(constructor_id='red-bull', type='RACE_RESULT', position_number=1)
-    serializer = ConstructorSerializer(driver_history,many=True)
-    if len(driver_history) > 0:
-        logger.info(serializer.data[0])
-
-def delete_race_opinion_key_from_active_sessions():
-    sessions = Session.objects.exclude(expire_date__lte=datetime.now())
-    logged_in = [s.session_key for s in sessions if s.get_decoded().get('_auth_user_id')]
-    for session_key in logged_in:
-        s = SessionStore(session_key=session_key)
-        del s['new_race_opinion']
-        s.save()  
-
-def print_session_dictionaries():
-    sessions = Session.objects.exclude(expire_date__lte=datetime.now())
-    for s in sessions:
-        print(s.get_decoded())
-
-def print_data_about_custom_user_from_username():
-    user = User.objects.get(username = 'username2')
-    print(user.__dict__)
-
-def get_list_from_constructor_pole_position_api_view():
-    api_view = ConstructorPolePositionAPIView()
-    logger.iapi_view.get_queryset()
-
-print_session_dictionaries()
+class ChampionshipRateTest(TestCase):
+    def setUp(self):
+        pass
+        # self.user = User.objects.create_user(username='testing', password='testing')
+        # season = Season.objects.create(year=2020)
+        # continent = Continent.objects.create(id='europe', code='EU', name='Europe', demonym='European')
+        # country = Country.objects.create(id='austria', alpha2_code='AT', alpha3_code='AUT', name='Austria', demonym='Austrian', continent=continent)
+        # grandprix = GrandPrix.objects.create(id='austria', name='Austria', full_name='Austrian Grand Prix', short_name='Austrian GP', country=country, total_race_held='35')
+        # circuit = Circuit(id='spielberg', name='Red Bull Ring', full_name='Red Bull Ring', previous_names='Österreichring,A1-Ring', type='RACE', place_name='Spielberg', country=country, latitude='47.219722', longitude='14.764722', total_races_held='36')
+        # self.race = Race.objects.create(year=season, round=1, date='2020-07-05', grand_prix=grandprix, official_name='Formula 1 Rolex Grosser Preis von Österreich 2020', qualifying_format='KNOCKOUT', circuit=circuit, circuit_type='RACE', course_length=4.3179999999999996163, laps=71, distance=306.45199999999999818)
+        # self.opinion = RaceOpinionModel(user=self.user, race=self.race, championship_rate=5, chaos_rate=5, racing_rate=5, strategy_rate=5)
+    
+    def test_championship_rate_function(self):
+        user = User.objects.get(username='username2')
+        race = Race.objects.get(id=1019)
+        opinion = RaceOpinionModel.objects.get(user=user, race=race)
+        self.assertTrue(Race.get_championship_rate(race, user), opinion.championship_rate)
