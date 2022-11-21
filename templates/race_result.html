@@ -3,17 +3,17 @@
 {% block style %}
     {% load static %}
 
-    <link href="{% static 'f1app/css/result_table.css' %}" rel="stylesheet"/>
+    <link href="{% static 'f1app/css/table.css' %}" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
     <h1>{{ race.official_name }}</h1>
 
-    {% with object_list=qualifying_list %}
+    {% with object_list=qualifying_list additional_class="table-podium" %}
         {% include "list_table.html" %}
     {% endwith %}
 
-    {% with object_list=race_list %}
+    {% with object_list=race_list additional_class="table-podium" %}
         {% include "list_table.html" %}
     {% endwith %}
 

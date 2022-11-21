@@ -9,29 +9,29 @@
 {% block content %}
     {% load static %}
     {% load tags %}
-	<h1>Members</h1>
-
-	<table class="table table-dark">
-    <tr>
-        {% for x in data|column_names %}
-            {% if x|is_meta_field is False %}
-                <td>{{ x|pretty_name }}</td>
-            {% endif %}
-        {% endfor %}
-    </tr>
-    {% for x in data %}
-        <tr onclick="moveToRace('{{x|get_item:"year_id"}}', {{x|get_item:"round"}})">
-            {% for key, value in x.items %}
-                {% if key|is_meta_field %}
-                {% elif value|is_ordered_dict %}
-                    <td>{{ value|get_item:"std_name" }}</td>
-                {% else %}
-                    <td>{{ value }}</td>
+    <div style="overflow: scroll;"> 
+        <table class="table table-dark table-custom table-year-race">
+        <tr>
+            {% for x in data|column_names %}
+                {% if x|is_meta_field is False %}
+                    <td>{{ x|pretty_name }}</td>
                 {% endif %}
             {% endfor %}
         </tr>
-    {% endfor %}
-	</table>
+        {% for x in data %}
+            <tr onclick="moveToRace('{{x|get_item:"year_id"}}', {{x|get_item:"round"}})">
+                {% for key, value in x.items %}
+                    {% if key|is_meta_field %}
+                    {% elif value|is_ordered_dict %}
+                        <td>{{ value|get_item:"std_name" }}</td>
+                    {% else %}
+                        <td>{{ value }}</td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
 
 	<ul>
     {% for x in last_visited %}

@@ -2,7 +2,7 @@
 {% load tags %}
 
 <div style="overflow: scroll;"> 
-    <table class="table table-dark">
+    <table class="table table-dark table-custom {{additional_class}}">
     {% if object_list|length > 0 %} 
         <tr>
             {% for x in object_list|column_names %}
