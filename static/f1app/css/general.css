@@ -1,33 +1,30 @@
-#home {
-    height: 70px;
-    background-color: #333;
+.dropdown-menu{
+    max-height: 400px;
+    overflow-y: auto;
 }
 
-#side-navigation {
-    height: 70px;
-    overflow: hidden;
-    float: right;
-    display: flex;
-    flex-direction: row;
-    align-items:inherit;
+.navbar {
+    left: auto !important;
+    right: 0px;
 }
 
-#side-navigation a {
-    line-height: 70px;
-    display: block;
-    height: 100%;
+.navbar-custom {
+    background-color: darkred;
+    position: fixed;
+    top: 0px;
     width: 100%;
-    text-align: center;
-    padding-left: 16px;
-    padding-right: 16px;
-    text-decoration: none;
-    font-size: 17px;
-} 
+}
+
+.dropdown-custom-style {
+    color: black;
+}
 
 h1 {
     font-family: math;
 }
 
 #content {
-    margin: 30px;
+    margin-top: 80px;
+    margin-right: 30px;
+    margin-left: 30px;
 }

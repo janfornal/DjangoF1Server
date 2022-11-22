@@ -670,6 +670,10 @@ class SeasonEntrantConstructor(models.Model):
     entrant = models.ForeignKey('Entrant', models.DO_NOTHING)
     constructor = models.ForeignKey('Constructor', models.DO_NOTHING)
     engine_manufacturer = models.ForeignKey('EngineManufacturer', models.DO_NOTHING)
+    
+    @classmethod
+    def constructor_from_season(cls, year):
+        return SeasonEntrantConstructor.objects.filter(year=year)
 
     class Meta:
         managed = False
@@ -684,6 +688,14 @@ class SeasonEntrantDriver(models.Model):
     rounds = models.CharField(max_length=255, blank=True, null=True)
     rounds_text = models.CharField(max_length=255, blank=True, null=True)
     test_driver = models.BooleanField()
+    
+    @classmethod
+    def driver_from_season(cls, year):
+        return SeasonEntrantDriver.objects.filter(year=year)
+    
+    @classmethod
+    def team_history(cls, driver):
+        return SeasonEntrantDriver.objects.filter(driver=driver)
 
     class Meta:
         managed = False

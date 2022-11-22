@@ -24,3 +24,7 @@ CONSTRUCTOR_FIELDS = ['id', 'name', 'full_name', 'country', 'best_championship_p
 
 RACE_FIELDS = ['id', 'year_id', 'round', 'date', 'grand_prix', 'official_name', 'qualifying_format',
     'circuit', 'circuit_type', 'course_length', 'laps', 'distance', 'scheduled_laps', 'scheduled_distance']
+
+SEASON_ENTRANT_DRIVER_FIELDS = [
+    'year', 'constructor', 'rounds_text'
+]

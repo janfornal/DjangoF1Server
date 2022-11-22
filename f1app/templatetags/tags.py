@@ -1,11 +1,14 @@
 from django import template
-from django_project_2 import settings
+from f1app.utils import CURRENT_YEAR
+from f1app import settings
 import collections
 import logging
 import re
 import os
 from bs4 import BeautifulSoup
 import urllib.request
+from f1app.models import Driver, SeasonEntrantConstructor, SeasonEntrantDriver
+from f1app.serializers import SeasonEntrantDriverSerializer
 from f1app.utils import META_FIELDS
 from rest_framework import utils
 
@@ -80,3 +83,23 @@ def is_meta_field(field):
 @register.filter
 def is_relation(field):
     return field.is_relation
+
+#### TODO nieserializowane !!!!!
+@register.simple_tag()
+def current_drivers():
+    return SeasonEntrantDriver.driver_from_season(CURRENT_YEAR)
+
+#### TODO nieserializowane !!!!!
+@register.simple_tag()
+def current_constructors():
+    return SeasonEntrantConstructor.constructor_from_season(CURRENT_YEAR)
+
+@register.filter
+def team_history(driver_id):
+    driver = Driver.objects.get(id=driver_id)
+    history = SeasonEntrantDriver.team_history(driver)
+    return SeasonEntrantDriverSerializer(history, many=True).data
+
+@register.simple_tag()
+def last_years():
+    return range(CURRENT_YEAR, CURRENT_YEAR - 20, -1)

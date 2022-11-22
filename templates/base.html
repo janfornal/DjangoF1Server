@@ -1,30 +1,56 @@
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        {% load static %}
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <!-- jQuery -->
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="{% static 'f1app/css/general.css' %}">
-        {% block style %}{% endblock style %}
-        <title>F1app</title>
-    </head>
-    <body>
-        <header id="home">
-            <nav id="side-navigation">
-                <a href='/f1app/race/2022/'>Seasons</a>
-                <a href='/f1app/driver/charles-leclerc/'>Drivers</a>
-                <a href='/f1app/constructor/ferrari/'>Constructors</a> 
-            </nav>
-        </header>
-        {% comment %} <h1>F1app</h1> {% endcomment %}
-        <div id='content'>
-            {% block content %}{% endblock content %}
-            {% if user.is_authenticated %}
-                <p>You are logged in as {{ request.user }}. Click here to <a href="{% url 'logout' %}">log out</a></p>
-            {% endif %}
-        </div>
-    </body>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">  
+    {% load static %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">  
+    <!-- jQuery -->
+    <link rel="stylesheet" href="{% static 'f1app/css/general.css' %}">
+    {% block style %}{% endblock style %}
+    <title>F1app</title>
+</head>
+<body>
+    {% load tags %}
+    <nav class="navbar navbar-inverse navbar-custom">  
+        <div class="container-fluid">  
+            <div class="navbar-header">  
+                <a class="navbar-brand text-body" href="#">WebSiteName</a>  
+            </div>  
+            <ul class="nav navbar-nav navbar-right">  
+            <li class="dropdown"><a class="dropdown-toggle text-body" data-toggle="dropdown" href="#">Seasons</a>  
+                <ul class="dropdown-menu"> 
+                {% last_years as items %}
+                {% for item in items %}
+                <li><a href="/f1app/race/{{ item }}/">{{ item }}</a></li>  
+                {% endfor %}
+                </ul>  
+            </li>  
+            <li class="dropdown"><a class="dropdown-toggle text-body" data-toggle="dropdown" href="#">Drivers</a>
+                <ul class="dropdown-menu"> 
+                {% current_drivers as items %}
+                {% for item in items %}
+                    <li><a href='/f1app/driver/{{ item.driver.id }}/'>{{ item.driver.id|pretty_name }}</a></li>  
+                {% endfor %}
+                </ul>  
+            </li>  
+            <li class="dropdown"><a class="dropdown-toggle text-body" data-toggle="dropdown" href="#">Constructors</a>
+                <ul class="dropdown-menu"> 
+                {% current_constructors as items %}
+                {% for item in items %}
+                    <li><a href='/f1app/constructor/{{ item.constructor.id }}/'>{{ item.constructor.id|pretty_name }}</a></li>  
+                {% endfor %}
+                </ul>  
+            </li>  
+            </ul>  
+        </div>  
+    </nav>  
+    <div id="content">
+        {% block content %}{% endblock content %}
+        {% if user.is_authenticated %}
+            <p>You are logged in as {{ request.user }}. Click here to <a href="{% url 'logout' %}">log out</a></p>
+        {% endif %}
+    </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>  
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>  
+</body>
 </html>

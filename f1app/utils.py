@@ -5,3 +5,5 @@ RACE_OPINION_MODEL_FIELDS = ['championship_rate', 'chaos_rate', 'racing_rate', '
 
 RACE_OPINION = 'race_opinion'
 NEW_RACE_OPINION = 'new_race_opinion'
+
+CURRENT_YEAR = 2022

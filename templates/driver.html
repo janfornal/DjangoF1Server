@@ -16,12 +16,12 @@
                     {% if key != 'id' and key|is_meta_field is False %}
                         <hr>
                         {% if key in list_of_extendables %}
-                            <div class="panel panel-default">
-                                <div class="panel-heading" role="tab" onclick="collapsePanel('{{ object|get_item:"id" }}', $(this))">
+                            <div>
+                                <div onclick="collapsePanel('{{ object|get_item:"id" }}', $(this))">
                                     <dt>{{ key|pretty_name }}</dt>
                                     <dd>{{ value }}</dd>
                                 </div>
-                                <div id="{{key}}" class="panel-collapse collapse" role="tabpanel"></div>
+                                <div id="{{key}}" class="panel-collapse collapse"></div>
                             </div>
                         {% elif value|is_ordered_dict %}
                             <dt>{{ key|pretty_name }}</dt>
@@ -35,7 +35,15 @@
             </dl>
         </div>
         <div class="sidebar">
-            <img class="general-image" src="{{ object|get_item:"id"|upper_underscore|get_photo }}">
+            <div class="general-image-container">
+                <img class="general-image" src="{{ object|get_item:"id"|upper_underscore|get_photo }}">
+            </div>
+            <h3>History of teams:</h3>
+            <ul class="list-style=none;">
+            {% for period in object|get_item:"id"|team_history %}
+                <li>{{ period|get_item:"year" }}, {{ period|get_item:"rounds_text" }}, {{ period|get_item:"constructor"|get_item:"std_name" }}</li>
+            {% endfor %}
+            </ul>
         </div>
     </div>
 

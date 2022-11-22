@@ -7,7 +7,7 @@ from f1app.utils import RACE_OPINION_MODEL_FIELDS
 from rest_framework import serializers
 
 from f1app.field_options import *
-from f1app.models import Constructor, Driver, Race, RaceData, RaceOpinionModel
+from f1app.models import Constructor, Driver, Race, RaceData, RaceOpinionModel, SeasonEntrantDriver
 
 logger = logging.getLogger("django")
 
@@ -84,6 +84,12 @@ class DriverSerializer(NestedSerializer, serializers.ModelSerializer):
     class Meta:
         model = Driver
         fields = tuple(DRIVER_FIELDS)
+        depth = 1
+
+class SeasonEntrantDriverSerializer(NestedSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = SeasonEntrantDriver
+        fields = tuple(SEASON_ENTRANT_DRIVER_FIELDS)
         depth = 1
 
 class RaceOpinionModelSerializer(serializers.ModelSerializer):

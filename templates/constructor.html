@@ -16,12 +16,12 @@
                     {% if key != 'id' and key|is_meta_field is False %}
                         <hr>
                         {% if key in list_of_extendables %}
-                            <div class="panel panel-default">
-                                <div class="panel-heading" role="tab" onclick="collapsePanel('{{ object|get_item:"id" }}', $(this))">
+                            <div>
+                                <div onclick="collapsePanel('{{ object|get_item:"id" }}', $(this))">
                                     <dt>{{ key|pretty_name }}</dt>
                                     <dd>{{ value }}</dd>
                                 </div>
-                                <div id="{{key}}" class="panel-collapse collapse" role="tabpanel"></div>
+                                <div id="{{key}}" class="panel-collapse collapse"></div>
                             </div>
                         {% elif value|is_ordered_dict %}
                             <dt>{{ key|pretty_name }}</dt>
