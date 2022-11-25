@@ -9,16 +9,19 @@
 {% block content %}
     {% load static %}
     {% load tags %}
+    <div class="row">
+        <h1 class="year-title">Formula 1 {{ year }} season</h1>
+    </div>
     <div style="overflow: scroll;"> 
         <table class="table table-dark table-custom table-year-race">
         <tr>
-            {% for x in data|column_names %}
+            {% for x in object_list|column_names %}
                 {% if x|is_meta_field is False %}
                     <td>{{ x|pretty_name }}</td>
                 {% endif %}
             {% endfor %}
         </tr>
-        {% for x in data %}
+        {% for x in object_list %}
             <tr onclick="moveToRace('{{x|get_item:"year_id"}}', {{x|get_item:"round"}})">
                 {% for key, value in x.items %}
                     {% if key|is_meta_field %}

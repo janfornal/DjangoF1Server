@@ -44,6 +44,14 @@
                 <li>{{ period|get_item:"year" }}, {{ period|get_item:"rounds_text" }}, {{ period|get_item:"constructor"|get_item:"std_name" }}</li>
             {% endfor %}
             </ul>
+            {% if family_relations|length > 0 %}
+                <h3>Family:</h3>
+            {% endif %}
+            <ul class="list-style=none;">
+            {% for relation in family_relations %}
+                <li>{{ relation|get_item:"type" }} of {{ relation|get_item:"driver"|pretty_name }}</li>
+            {% endfor %}
+            </ul>
         </div>
     </div>
 

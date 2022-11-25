@@ -1,7 +1,7 @@
 import logging
 from django.forms import ModelForm
 from f1app.models import DriverOpinionModel, RaceOpinionModel
-from f1app.utils import RACE_OPINION_MODEL_FIELDS
+from f1app.variables import RACE_OPINION_MODEL_FIELDS
 
 logger = logging.Logger("django")
 

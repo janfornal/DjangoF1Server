@@ -1,6 +1,6 @@
 from django import template
-from f1app.utils import CURRENT_YEAR
-from f1app import settings
+from f1app.variables import CURRENT_YEAR, META_FIELDS
+from django_project_2 import settings
 import collections
 import logging
 import re
@@ -9,7 +9,6 @@ from bs4 import BeautifulSoup
 import urllib.request
 from f1app.models import Driver, SeasonEntrantConstructor, SeasonEntrantDriver
 from f1app.serializers import SeasonEntrantDriverSerializer
-from f1app.utils import META_FIELDS
 from rest_framework import utils
 
 register = template.Library()
@@ -64,11 +63,11 @@ def get_range(a):
 
 @register.filter
 def item(dictionary, key):
-    return dictionary.get(key)
+    return get_item(dictionary, key)
 
 @register.filter
 def get_item(dictionary, key):
-    if(dictionary.__class__ == collections.OrderedDict):
+    if dictionary.__class__ in [collections.OrderedDict, dict, utils.serializer_helpers.ReturnDict]:
         return dictionary.get(key)
     return None
 

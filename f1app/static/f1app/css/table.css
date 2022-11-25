@@ -6,17 +6,14 @@
     padding: 0;
 }
 
-.table-year-race tr:nth-child(1) {
+.table-custom tr:nth-child(1) {
     background-color: black;
+    color:white;
 }
 
 .table-year-race tr:nth-child(n+2):hover td {
 	background-color: darkgrey;
 	color: black;
-}
-
-.table-podium tr:nth-child(1) {
-    background-color: black;
 }
 
 .table-podium tr:nth-child(2) {

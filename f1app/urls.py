@@ -4,6 +4,8 @@ from f1app import views
 from django.conf.urls.static import static
 from django.conf import settings
 
+handler404 = views.page_not_found
+
 urlpatterns=[
     path('', views.index, name='index'),
     path('race/',views.GeneralRaceView.as_view()),

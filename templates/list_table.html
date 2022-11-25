@@ -17,11 +17,11 @@
         {% for key, value in x.items %}
             {% if key|is_meta_field %}
             {% elif value|get_item:"object_type" == "Driver" %}
-                <td onclick="moveToDriver('{{ value|get_item:"id" }}')">{{ value|get_item:"std_name" }}</td>
+                <td style="cursor: pointer;" onclick="moveToDriver('{{ value|get_item:"id" }}')">{{ value|get_item:"std_name" }}</td>
             {% elif value|get_item:"object_type" == "Constructor" %}
-                <td onclick="moveToConstructor('{{ value|get_item:"id" }}')">{{ value|get_item:"std_name" }}</td>
+                <td style="cursor: pointer;" onclick="moveToConstructor('{{ value|get_item:"id" }}')">{{ value|get_item:"std_name" }}</td>
             {% elif value|get_item:"object_type" == "Race" %}
-                <td onclick="moveToRace({{ value|get_item:"year_id" }}, {{ value|get_item:"round" }})">{{ value|get_item:"std_name" }}</td>
+                <td style="cursor: pointer;" onclick="moveToRace({{ value|get_item:"year_id" }}, {{ value|get_item:"round" }})">{{ value|get_item:"std_name" }}</td>
             {% elif value|is_ordered_dict %}
                 <td>{{ value.std_name }}</td>
             {% else %}

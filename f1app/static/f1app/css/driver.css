@@ -18,6 +18,7 @@
 .sidebar {
     float: right;
     width: 30%;
+    margin-top: 50px;
     justify-content: center;
 }
 

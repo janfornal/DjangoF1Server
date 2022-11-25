@@ -1,6 +1,7 @@
-from django.forms import ValidationError
-from django.http import HttpResponseRedirect
-from django.shortcuts import HttpResponse, redirect, render
+from collections import OrderedDict
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import redirect, render
+from django.template import RequestContext
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from f1app.field_options import *
@@ -9,13 +10,13 @@ from django.http.response import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login
 from django.views.generic.edit import FormView
-from f1app.utils import NEW_RACE_OPINION
+from f1app.utils import combine_ordered_dicts, get_image_links
+from f1app.variables import NEW_RACE_OPINION, RACE_OPINION_MODEL_FIELDS
 from rest_framework import permissions, views, status, generics
 from rest_framework.response import Response
 import logging
-import os
 
-from f1app.serializers import ConstructorSerializer, DriverOfTheDaySerializer, DriverSerializer, QualifyingResultSerializer, RaceOpinionModelSerializer, RaceResultSerializer, LoginSerializer, RaceSerializer
+from f1app.serializers import ConstructorSerializer, DriverFamilyRelationshipSerializer, DriverOfTheDaySerializer, DriverSerializer, QualifyingResultSerializer, RaceOpinionModelSerializer, RaceResultSerializer, LoginSerializer, RaceSerializer
 from f1app.models import Constructor, Driver, Race, RaceData, RaceOpinionModel
 
 logger = logging.getLogger("django")
@@ -36,19 +37,6 @@ class GeneralRaceView(views.APIView):
         race = Race.objects.all()
         race_serializer=RaceSerializer(race,many=True)
         return JsonResponse(race_serializer.data,safe=False)
-
-class YearRaceView(LoginRequiredMixin, views.APIView):
-    login_url = "/"
-    def get(self, request, year):
-        request.session.get('years').insert(0, year)
-        if len(request.session.get('years')) > 5:
-            request.session.get('years').pop()
-        request.session.modified = True
-        race = Race.objects.filter(year=year)
-        serializer = RaceSerializer(race,many=True)
-        if len(race) > 0:
-            return render(request, 'year_race.html', {'data': serializer.data})
-        return render(request, 'error_message.html')
 
 class CustomListAPIView(generics.ListAPIView):
     def get_serializer_context(self):
@@ -78,6 +66,47 @@ class CustomListView(LoginRequiredMixin, ListView):
         if format == 'json':
             return JsonResponse(self.get_queryset(),safe=False)
         return super(ListView, self).get(request, *args)
+
+class YearRaceAPIView(CustomListAPIView):
+    serializer_class = RaceSerializer
+
+    def get_queryset(self): 
+        return Race.objects.filter(year=self.kwargs['year'])
+
+class YearRaceView(ListView):
+    login_url = "/"
+    template_name = "year_race.html"
+    allow_empty = False
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['year'] = self.kwargs['year']
+        logger.info(data['year'])
+        return data
+    
+    def get_queryset(self):
+        race_list = Race.objects.filter(year=self.kwargs['year'])
+        serializer = RaceSerializer(race_list, many=True)
+        # opinion_list = RaceOpinionModel.objects.filter(user=self.request.user, race__in=race_list)
+        # opinion_serializer = RaceOpinionModelSerializer(opinion_list, many=True)
+        # combine_ordered_dicts(serializer.data, 'id', opinion_serializer.data, 'race')
+        try: 
+            return serializer.data
+        except IndexError:
+            raise Http404
+        
+    def get(self, request, year):
+        request.session.get('years').insert(0, year)
+        if len(request.session.get('years')) > 5:
+            request.session.get('years').pop()
+        request.session.modified = True
+        format = request.GET.get('format')
+        if format == 'json':
+            return JsonResponse(self.get_queryset(),safe=False)
+        return super(ListView, self).get(request, year)
+        # if len(race) > 0:
+            # return render(request, 'year_race.html', {'data': serializer.data})
+        # return render(request, 'error_message.html')
 
 class QualifyingResultAPIView(CustomListAPIView):
     serializer_class = QualifyingResultSerializer
@@ -110,6 +139,7 @@ class GrandPrixResultView(ListView):
     login_url = "/" ### loginrequiredmixin
     template_name = "race_result.html"
     context_object_name = "race_list"
+    allow_empty = False
 
     def get_qualifying_queryset(self):
         api_view_object = QualifyingResultAPIView()
@@ -120,7 +150,7 @@ class GrandPrixResultView(ListView):
         data = super().get_context_data(**kwargs)
         data['race'] = Race.get_race(self.kwargs['year'], self.kwargs['no'])
         data['qualifying_list'] = self.get_qualifying_queryset()
-        logger.info(data['qualifying_list'])
+        data['image_urls'] = get_image_links(data['race'])  
         return data
     
     def get_queryset(self): ### listapiview, według https://stackoverflow.com/questions/51169129/get-queryset-missing-1-required-positional-argument-request wystarczy listview
@@ -137,6 +167,7 @@ class GrandPrixResultView(ListView):
 class ConstructorView(LoginRequiredMixin, DetailView):
     login_url = "/" 
     template_name = "constructor.html"
+    allow_empty = False
     
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -146,7 +177,10 @@ class ConstructorView(LoginRequiredMixin, DetailView):
     def get_object(self): ### listapiview, według https://stackoverflow.com/questions/51169129/get-queryset-missing-1-required-positional-argument-request wystarczy listview
         constructor = Constructor.objects.filter(id=self.kwargs['name'])
         serializer = ConstructorSerializer(constructor, many=True)
-        return serializer.data[0]
+        try: 
+            return serializer.data[0]
+        except IndexError:
+            raise Http404
         
     def get(self, request, name):
         return super(DetailView, self).get(request, name)    
@@ -184,12 +218,20 @@ class DriverView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['list_of_extendables'] = ['total_pole_positions', 'total_race_starts', 'total_race_wins', 'total_driver_of_the_day']
+        family_relations = Driver.family_relations(self.get_raw_object())
+        logger.info(family_relations)
+        data['family_relations'] = DriverFamilyRelationshipSerializer(family_relations, many=True).data if len(family_relations) > 0 else OrderedDict()
         return data
     
+    def get_raw_object(self):
+        try:
+            return Driver.objects.filter(id=self.kwargs['name'])[0]
+        except IndexError:
+            raise Http404
+    
     def get_object(self):
-        constructor = Driver.objects.filter(id=self.kwargs['name'])
-        serializer = DriverSerializer(constructor, many=True)
-        return serializer.data[0]
+        serializer = DriverSerializer(self.get_raw_object())
+        return serializer.data
         
     def get(self, request, name):
         return super(DetailView, self).get(request, name)    
@@ -354,6 +396,14 @@ class RaceOpinionFormView(FormView):
             # return HttpResponse("Your data is successfully saved")
         # else:
             # return HttpResponse("Validation error!")
+
+"""
+Page not found Error 404
+"""
+def page_not_found(request, exception):
+    response = render('404.html', context_instance=RequestContext(request))
+    response.status_code = 404
+    return response
 
 def check_rate(request):
     rate = request.GET.get('rate')

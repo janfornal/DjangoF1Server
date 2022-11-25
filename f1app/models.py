@@ -123,6 +123,9 @@ class Driver(models.Model):
     total_pole_positions = models.IntegerField()
     total_fastest_laps = models.IntegerField()
     total_driver_of_the_day = models.IntegerField()
+
+    def family_relations(self):
+        return DriverFamilyRelationship.objects.filter(other_driver = self)
     
     class Meta:
         managed = False
@@ -471,7 +474,7 @@ class Race(models.Model):
     def is_rated(self, user):
         races = RaceOpinionModel.objects.filter(race=self, user=user)
         return len(races) > 0
-
+    
     def get_championship_rate(self, user):
         rate = RaceOpinionModel.objects.get(race=self, user=user)
         return rate.championship_rate

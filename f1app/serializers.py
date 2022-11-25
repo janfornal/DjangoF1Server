@@ -3,11 +3,11 @@ import collections
 
 from django.contrib.auth import authenticate
 from django.db import models
-from f1app.utils import RACE_OPINION_MODEL_FIELDS
+from f1app.variables import PRETTY_FAMILY_NAMES, RACE_OPINION_MODEL_FIELDS
 from rest_framework import serializers
 
 from f1app.field_options import *
-from f1app.models import Constructor, Driver, Race, RaceData, RaceOpinionModel, SeasonEntrantDriver
+from f1app.models import Constructor, Driver, DriverFamilyRelationship, Race, RaceData, RaceOpinionModel, SeasonEntrantDriver
 
 logger = logging.getLogger("django")
 
@@ -52,6 +52,11 @@ class RaceSerializer(NestedSerializer, serializers.ModelSerializer):
         fields = tuple(RACE_FIELDS)
         depth = 1
 
+class RaceOpinionModelSerializer(NestedSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = RaceOpinionModel
+        fields = tuple(RACE_OPINION_MODEL_FIELDS + ['race'])
+
 ### TODO - jakaś blokada żeby zawsze RESULT_FIELDS oraz ShallowRaceSerializer() były razem
 class RaceResultSerializer(NestedSerializer, serializers.ModelSerializer):
     race = ShallowRaceSerializer()
@@ -91,12 +96,16 @@ class SeasonEntrantDriverSerializer(NestedSerializer, serializers.ModelSerialize
         model = SeasonEntrantDriver
         fields = tuple(SEASON_ENTRANT_DRIVER_FIELDS)
         depth = 1
-
-class RaceOpinionModelSerializer(serializers.ModelSerializer):
+    
+class DriverFamilyRelationshipSerializer(serializers.ModelSerializer):
+    type = serializers.SerializerMethodField()
     class Meta:
-        model = RaceOpinionModel
-        fields = tuple(RACE_OPINION_MODEL_FIELDS)
-        depth = 1
+        model = DriverFamilyRelationship
+        fields = tuple(FAMILY_RELATION_FIELDS)
+
+    @staticmethod
+    def get_type(obj: DriverFamilyRelationship):
+        return PRETTY_FAMILY_NAMES[f'{obj.type}']
 
 class LoginSerializer(serializers.Serializer):
     """
