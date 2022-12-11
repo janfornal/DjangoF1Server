@@ -22,6 +22,8 @@
             {% endfor %}
         </dl>
     {% endif %}
+{% endblock %}
+{% block scripts %}
     <script>     
         {% for x in drivers %}
             $(".{{ x.driver }} .id_rate").change(function () {       

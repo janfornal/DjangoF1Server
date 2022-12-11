@@ -8,8 +8,7 @@
 
 {% block content %}
     {% load tags %}
-
-    <h2 class='left'>Set rating of {{ race_name }}</h2>
+    <h2 class='left'>Set rating of {{ race.official_name }}</h2>
     <form class="opinion-race" method="POST">{% csrf_token %}
         {% for field in fields %}
             <fieldset id="{{ field }}">
@@ -28,4 +27,48 @@
         <input type="submit" name="previous" value="Previous" />
         <input type="submit" name="next" value="Next" />
     </form>
+
+    <div class='container-fluid'>
+        <div class='row'>
+            <div class='col-xs-6'>
+                <div class='comment-class'>
+                    <p id='comment-class-form-trigger'>Add Comment</p>
+                    <form id='comment-class-form' method="POST">{% csrf_token %}
+                        <div class="form-group">
+                            {{ comment_form }}
+                            <input type="submit" value="submit" name="submit-comment"></input>
+                        </div>
+                    </form>
+                    <hr>
+                    {% if not race.comments.all %}
+                        <p>Not comments added yet</p>
+                    {% else %}
+                        {% for comment in race.comments.all %}
+                            <h4><strong>{{ comment.user }}</strong></h4>
+                            <p>{{ comment.comment_body }}</p>
+                            <p><small>{{ comment.time_added }}</small></p>
+                            <hr>
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+            </div>
+            <div class='col-xs-6'>
+                <p>See below Race Highlights</p>
+                <a href="{{ race.video.link }}">
+                    <img src="{{ race.video.thumbnail }}">
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(function() {
+            console.log($('#comment-class-form-trigger'))
+            $('#comment-class-form-trigger').click(function() {
+                document.getElementById('comment-class-form').style.display = "block"
+            })
+        })
+    </script>
 {% endblock %}

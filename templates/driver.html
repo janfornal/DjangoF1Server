@@ -40,8 +40,9 @@
             </div>
             <h3>History of teams:</h3>
             <ul class="list-style=none;">
-            {% for period in object|get_item:"id"|team_history %}
+            {% for period in team_history %}
                 <li>{{ period|get_item:"year" }}, {{ period|get_item:"rounds_text" }}, {{ period|get_item:"constructor"|get_item:"std_name" }}</li>
+                <canvas class="canvas {{ period|get_item:"id" }}" style="border:1px solid #c3c3c3;"></canvas>
             {% endfor %}
             </ul>
             {% if family_relations|length > 0 %}
@@ -54,12 +55,15 @@
             </ul>
         </div>
     </div>
-
     <div id="entity_name" style="display:none"></div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'f1app/js/diagrams.js' %}"></script>
     <script src="{% static 'f1app/js/loadtables.js' %}"></script>
+    <script src="{% static 'f1app/js/redirects.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module">
         document.getElementById("entity_name").innerHTML = 'driver'
+        plot_diagrams({{ results_visual|safe }})
     </script>
-    <script src="{% static 'f1app/js/redirects.js' %}"></script>
-
 {% endblock %}

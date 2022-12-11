@@ -69,6 +69,11 @@ def get_image_links(race):
     logger.info(url)
     return get_gallery_from_race(url)
 
+def prettify_position(number):
+    if number:
+        ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
+        return ordinal(number)
+    else: return "DNF"
 
 ### not used
 def combine_ordered_dicts(first_dict, first_key, second_dict, second_key):

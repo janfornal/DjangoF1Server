@@ -1,5 +1,5 @@
 import logging
-from f1app.model_tables import DRIVER_OPINION_MODEL, RACE_OPINION_MODEL
+from f1app.model_tables import COMMENT_MODEL, DRIVER_OPINION_MODEL, RACE_OPINION_MODEL, RACE_VIDEOS
 
 logger = logging.getLogger('django')
 
@@ -12,8 +12,10 @@ class DatabaseRouter(object):
     ]
     
     f1_related = [
+        COMMENT_MODEL,
         DRIVER_OPINION_MODEL,
         RACE_OPINION_MODEL,
+        RACE_VIDEOS,
     ]
     
     f1_tables = [
@@ -60,22 +62,23 @@ class DatabaseRouter(object):
     ]
 
     def db_for_read(self, model, **hints):
-        if model._meta.db_table in (list)(DatabaseRouter.f1_tables + DatabaseRouter.f1_related):
-            return 'default'         
+        return 'default'         
 
     def db_for_write(self, model, **hints):
-        if model._meta.app_label in self.administration_apps:
-            return 'default'
-        if model._meta.db_table in DatabaseRouter.f1_related:
+        # if model._meta.app_label in self.administration_apps:
+            # return 'default'
+        if model._meta.db_table not in DatabaseRouter.f1_tables:
             return 'default'
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
-        dictionary = {
-            DRIVER_OPINION_MODEL: 'default',
-            RACE_OPINION_MODEL: 'default',
-        }
-        if model_name in dictionary.keys():
-            return db == dictionary[model_name]    
-        if app_label in self.administration_apps:
-            return db == 'default'
-        return False
+        return True
+        # dictionary = {
+            # COMMENT_MODEL: 'default',
+            # DRIVER_OPINION_MODEL: 'default',
+            # RACE_OPINION_MODEL: 'default',
+        # }
+        # if model_name in dictionary.keys():
+            # return db == dictionary[model_name]    
+        # if app_label in self.administration_apps:
+            # return db == 'default'
+        # return False

@@ -5,19 +5,20 @@ from django.template import RequestContext
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from f1app.field_options import *
-from f1app.forms import DriverOpinionForm, RaceOpinionForm
+from f1app.forms import CommentForm, CommentModel, DriverOpinionForm, RaceOpinionForm
 from django.http.response import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login
 from django.views.generic.edit import FormView
-from f1app.utils import combine_ordered_dicts, get_image_links
-from f1app.variables import NEW_RACE_OPINION, RACE_OPINION_MODEL_FIELDS
+from f1app.utils import get_image_links
+import json
+from f1app.variables import NEW_RACE_OPINION
 from rest_framework import permissions, views, status, generics
 from rest_framework.response import Response
 import logging
 
-from f1app.serializers import ConstructorSerializer, DriverFamilyRelationshipSerializer, DriverOfTheDaySerializer, DriverSerializer, QualifyingResultSerializer, RaceOpinionModelSerializer, RaceResultSerializer, LoginSerializer, RaceSerializer
-from f1app.models import Constructor, Driver, Race, RaceData, RaceOpinionModel
+from f1app.serializers import ConstructorSerializer, DriverFamilyRelationshipSerializer, DriverOfTheDaySerializer, DriverSerializer, QualifyingResultSerializer, RaceOpinionModelSerializer, RaceResultSerializer, LoginSerializer, RaceSerializer, SeasonEntrantDriverSerializer
+from f1app.models import Constructor, Driver, Race, RaceData, RaceOpinionModel, Season, SeasonEntrantDriver
 
 logger = logging.getLogger("django")
 # Create your views here.
@@ -219,8 +220,10 @@ class DriverView(LoginRequiredMixin, DetailView):
         data = super().get_context_data(**kwargs)
         data['list_of_extendables'] = ['total_pole_positions', 'total_race_starts', 'total_race_wins', 'total_driver_of_the_day']
         family_relations = Driver.family_relations(self.get_raw_object())
-        logger.info(family_relations)
         data['family_relations'] = DriverFamilyRelationshipSerializer(family_relations, many=True).data if len(family_relations) > 0 else OrderedDict()
+        history = SeasonEntrantDriver.team_history(self.get_raw_object())
+        data['team_history'] = SeasonEntrantDriverSerializer(history, many=True).data
+        data['results_visual'] = json.dumps(data['team_history'])
         return data
     
     def get_raw_object(self):
@@ -335,6 +338,10 @@ class RaceOpinionFormView(FormView):
     template_name = 'race_opinion.html'
 
     def get(self, request, year):
+        try: 
+            valid_year = Season.objects.get(year = year)
+        except Season.DoesNotExist:
+            raise Http404
         year = (str)(year)
         round = 1
         if request.session.get(NEW_RACE_OPINION) is None:
@@ -351,10 +358,11 @@ class RaceOpinionFormView(FormView):
         year = (str)(self.kwargs['year'])
         round = self.request.session[NEW_RACE_OPINION][year]
         race_instance = Race.get_race((int)(year), round)
-        data['race_name'] = race_instance.official_name
+        data['race'] = race_instance
         data['fields'] = RaceOpinionFormView.form_class._meta.fields
-        opinion = RaceOpinionModel.objects.get(user = self.request.user, race = race_instance)
+        opinion = RaceOpinionModel.objects.filter(user = self.request.user, race = race_instance).first()
         data['opinion'] = RaceOpinionModelSerializer(opinion).data
+        data['comment_form'] = CommentForm()
         return data
 
     def get_success_url(self, year):
@@ -367,11 +375,18 @@ class RaceOpinionFormView(FormView):
             return f'/f1app/race/{year}/'
         else: 
             return f'/f1app/opinion/{year}/' 
+    
+    def post_comment(self, request, year, round):
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            CommentModel.objects.create(
+                user = request.user, race = Race.get_race((int)(year), round),
+                comment_body = form.cleaned_data['comment_body']
+            )
+        return redirect(self.get_success_url(year))
 
-    def post(self, request, year):
-        year = (str)(year)
+    def post_rates(self, request, year, round):
         form = RaceOpinionForm(request.POST)
-        round = request.session[NEW_RACE_OPINION][year]
         if form.is_valid():
             RaceOpinionModel.objects.update_or_create(
                 user = request.user, race = Race.get_race((int)(year), round),
@@ -383,6 +398,14 @@ class RaceOpinionFormView(FormView):
             request.session[NEW_RACE_OPINION][year] = round + 1
         request.session.modified = True
         return redirect(self.get_success_url(year))
+
+    def post(self, request, year):
+        year = (str)(year)
+        round = request.session[NEW_RACE_OPINION][year]
+        if 'submit-comment' in request.POST:
+            return self.post_comment(request, year, round)
+        else:
+            return self.post_rates(request, year, round)
     
 # class FormExampleView(views.APIView):
     # permission_classes = (permissions.AllowAny,)

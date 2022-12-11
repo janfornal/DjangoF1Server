@@ -3,3 +3,7 @@
     font-family: system-ui;
     background-color: white;
 }
+
+#comment-class-form {
+    display: none;
+}

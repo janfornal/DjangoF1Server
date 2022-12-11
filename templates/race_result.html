@@ -46,7 +46,7 @@
     {% with object_list=race_list additional_class="table-podium" %}
         {% include "list_table.html" %}
     {% endwith %}
-
+{% endblock %}
+{% block scripts %}
     <script src="{% static 'f1app/js/gallery.js' %}"></script>
-
 {% endblock %}

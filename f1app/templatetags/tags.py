@@ -93,12 +93,6 @@ def current_drivers():
 def current_constructors():
     return SeasonEntrantConstructor.constructor_from_season(CURRENT_YEAR)
 
-@register.filter
-def team_history(driver_id):
-    driver = Driver.objects.get(id=driver_id)
-    history = SeasonEntrantDriver.team_history(driver)
-    return SeasonEntrantDriverSerializer(history, many=True).data
-
 @register.simple_tag()
 def last_years():
     return range(CURRENT_YEAR, CURRENT_YEAR - 20, -1)

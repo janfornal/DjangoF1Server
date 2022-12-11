@@ -1,9 +1,13 @@
 from django.db import models
 from django.db.models import Avg, functions
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from collections import Counter
 
-from f1app.model_tables import DRIVER_OPINION_MODEL, RACE_OPINION_MODEL
+from f1app.model_tables import COMMENT_MODEL, DRIVER_OPINION_MODEL, RACE_OPINION_MODEL, RACE_VIDEOS
+from f1app.utils import prettify_position
+import logging
+
+logger = logging.getLogger('django')
 
 ##### f1database
 
@@ -571,7 +575,7 @@ class RaceData(models.Model):
     
     @property
     def opinion(self):
-        performance_data = DriverOpinionModel.objects.filter(driver_id=self.driver, race_id=self.race)
+        performance_data = DriverOpinionModel.objects.filter(driver=self.driver, race=self.race)
         return performance_data.aggregate(opinion = functions.Coalesce(Avg('rate'), 0.0))['opinion']
     
     class Meta:
@@ -592,14 +596,14 @@ class RaceDriverStanding(models.Model):
         db_table = 'race_driver_standing'
 
 class RaceResult(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey(Race, models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
     constructor_id = models.CharField(max_length=255, blank=True, null=True)
     engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
     tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
@@ -699,6 +703,22 @@ class SeasonEntrantDriver(models.Model):
     @classmethod
     def team_history(cls, driver):
         return SeasonEntrantDriver.objects.filter(driver=driver)
+    
+    def rounds_numeric(self):
+        return list(map(int, filter(lambda x: x.isnumeric(), self.rounds.split(','))))
+    
+    @property
+    def id(self):  ### this is horrible
+        return '' + (str)(self.year.year) + ' ' + self.entrant_id + ' ' + self.constructor_id + ' ' + self.engine_manufacturer_id + ' ' + self.driver_id
+
+    @property
+    def results(self):
+        races = Race.objects.filter(year_id = self.year, round__in=self.rounds_numeric())
+        race_data = RaceData.objects.filter(race__in=races, driver = self.driver, type='RACE_RESULT')
+        results_list = sorted(list(map(lambda x: x.position_number if x.position_number else 0, race_data)))
+        results_list = map(prettify_position, results_list)
+        results_dict = dict(Counter(k for k in results_list))
+        return results_dict
 
     class Meta:
         managed = False
@@ -834,6 +854,15 @@ class WarmingUpResult(models.Model):
 
 ##### opinions
 
+class CommentModel(models.Model):
+    user = models.ForeignKey(User, models.CASCADE)
+    race = models.ForeignKey(Race, models.CASCADE, related_name="comments")
+    comment_body = models.TextField()
+    time_added = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = COMMENT_MODEL
+
 class DriverOpinionModel(models.Model):
     id = models.IntegerField(primary_key=True)
     race = models.ForeignKey(Race, models.CASCADE)
@@ -867,6 +896,14 @@ class RaceOpinionModel(models.Model):
         ]
         db_table = RACE_OPINION_MODEL
 
+class RaceVideos(models.Model):
+    race = models.OneToOneField(Race, models.CASCADE, related_name='video')
+    link = models.URLField(max_length=255)
+    thumbnail = models.URLField(max_length=255)
+    
+    class Meta:
+        db_table = RACE_VIDEOS
+    
 ##### testing 
 
 # class ExampleModel(models.Model):

@@ -26,7 +26,7 @@ RACE_FIELDS = ['id', 'year_id', 'round', 'date', 'grand_prix', 'official_name', 
     'circuit', 'circuit_type', 'course_length', 'laps', 'distance', 'scheduled_laps', 'scheduled_distance']
 
 SEASON_ENTRANT_DRIVER_FIELDS = [
-    'year', 'constructor', 'rounds_text'
+    'id', 'year', 'constructor', 'rounds_text', 'results'
 ]
 
 FAMILY_RELATION_FIELDS = [
