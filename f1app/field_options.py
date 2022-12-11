@@ -1,14 +1,14 @@
 RESULT_FIELDS = ['position_number', 'driver_number', 'driver', 'constructor', 'engine_manufacturer', 
     'tyre_manufacturer'] 
 
-RACE_RESULT_FIELDS = ['race_laps', 'race_time', 'race_time_penalty', 'race_interval', 'race_reason_retired',
-    'race_points', 'race_grid_position_text', 'race_positions_gained']
+RACE_RESULT_FIELDS = ['laps', 'time', 'time_penalty', 'interval', 'reason_retired',
+    'points', 'grid_position_text', 'positions_gained']
 
-QUALIFYING_RESULT_FIELDS = ['qualifying_q1', 'qualifying_q2', 'qualifying_q3', 'qualifying_laps']
+QUALIFYING_RESULT_FIELDS = ['q1', 'q2', 'q3', 'laps']
 
 GRAND_PRIX_FIELDS = ['race']
 
-DRIVER_OF_THE_DAY_FIELDS = ['driver_of_the_day_percentage']
+DRIVER_OF_THE_DAY_FIELDS = ['percentage']
 
 DRIVER_FIELDS = ['id', 'name', 'first_name', 'last_name', 'full_name', 'abbreviation', 'permanent_number', 
     'gender', 'date_of_birth', 'date_of_death', 'place_of_birth', 'country_of_birth_country', 

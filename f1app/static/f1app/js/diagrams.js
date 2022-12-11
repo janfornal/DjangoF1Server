@@ -7,9 +7,10 @@ function plot_diagrams(results_visual) {
             data: {
                 labels: Object.keys(results_visual[i].results),
                 datasets: [{
-                    label: '#',
                     data: Object.values(results_visual[i].results),
-                    borderWidth: 1
+                    borderWidth: 1,
+                    borderColor: 'dark-brown',
+                    backgroundColor: 'brown',
                 }]
             },
             options: {

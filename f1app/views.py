@@ -18,7 +18,7 @@ from rest_framework.response import Response
 import logging
 
 from f1app.serializers import ConstructorSerializer, DriverFamilyRelationshipSerializer, DriverOfTheDaySerializer, DriverSerializer, QualifyingResultSerializer, RaceOpinionModelSerializer, RaceResultSerializer, LoginSerializer, RaceSerializer, SeasonEntrantDriverSerializer
-from f1app.models import Constructor, Driver, Race, RaceData, RaceOpinionModel, Season, SeasonEntrantDriver
+from f1app.models import Constructor, Driver, DriverOfTheDayResult, QualifyingResult, Race, RaceOpinionModel, RaceResult, Season, SeasonEntrantDriver
 
 logger = logging.getLogger("django")
 # Create your views here.
@@ -120,7 +120,7 @@ class QualifyingResultAPIView(CustomListAPIView):
     def get_queryset(self): ### listapiview, według https://stackoverflow.com/questions/51169129/get-queryset-missing-1-required-positional-argument-request wystarczy listview
         race = Race.objects.filter(year=self.kwargs['year'], round=self.kwargs['no'])
         values = race.values_list('id', flat=True)
-        return RaceData.objects.filter(race_id__in=values, type='QUALIFYING_RESULT')
+        return QualifyingResult.objects.filter(race_id__in=values)
 
 class RaceResultAPIView(CustomListAPIView):
     serializer_class = RaceResultSerializer
@@ -134,7 +134,7 @@ class RaceResultAPIView(CustomListAPIView):
     def get_queryset(self): ### listapiview, według https://stackoverflow.com/questions/51169129/get-queryset-missing-1-required-positional-argument-request wystarczy listview
         race = Race.objects.filter(year=self.kwargs['year'], round=self.kwargs['no'])
         values = race.values_list('id', flat=True)
-        return RaceData.objects.filter(race_id__in=values, type='RACE_RESULT')
+        return RaceResult.objects.filter(race_id__in=values)
 
 class GrandPrixResultView(ListView):
     login_url = "/" ### loginrequiredmixin
@@ -190,7 +190,7 @@ class ConstructorPolePositionAPIView(CustomListAPIView):
     serializer_class = QualifyingResultSerializer
 
     def get_queryset(self): 
-        return RaceData.objects.filter(constructor_id=self.kwargs['name'], type='QUALIFYING_RESULT', position_number=1)
+        return QualifyingResult.objects.filter(constructor=self.kwargs['name'], position_number=1)
 
 class ConstructorPolePositionView(CustomListView):
     def get_api_view_object():
@@ -203,7 +203,7 @@ class ConstructorWinAPIView(CustomListAPIView):
     serializer_class = RaceResultSerializer
 
     def get_queryset(self): 
-        return RaceData.objects.filter(constructor_id=self.kwargs['name'], type='RACE_RESULT', position_number=1)
+        return RaceResult.objects.filter(constructor=self.kwargs['name'], position_number=1)
 
 class ConstructorWinView(CustomListView):
     def get_api_view_object():
@@ -243,7 +243,7 @@ class DriverPolePositionAPIView(CustomListAPIView):
     serializer_class = QualifyingResultSerializer
 
     def get_queryset(self): 
-        return RaceData.objects.filter(driver_id=self.kwargs['name'], type='QUALIFYING_RESULT', position_number=1)
+        return QualifyingResult.objects.filter(driver=self.kwargs['name'], position_number=1)
 
 class DriverPolePositionView(CustomListView):
     def get_api_view_object():
@@ -256,7 +256,7 @@ class DriverWinAPIView(CustomListAPIView):
     serializer_class = RaceResultSerializer
 
     def get_queryset(self): 
-        return RaceData.objects.filter(driver_id=self.kwargs['name'], type='RACE_RESULT', position_number=1)
+        return RaceResult.objects.filter(driver=self.kwargs['name'], position_number=1)
 
 class DriverWinView(CustomListView):
     def get_api_view_object():
@@ -269,7 +269,7 @@ class DriverRaceAPIView(CustomListAPIView):
     serializer_class = RaceResultSerializer
 
     def get_queryset(self): 
-        return RaceData.objects.filter(driver_id=self.kwargs['name'], type='RACE_RESULT')
+        return RaceResult.objects.filter(driver=self.kwargs['name'])
 
 class DriverRaceView(CustomListView):
     def get_api_view_object():
@@ -282,7 +282,7 @@ class DriverOfTheDayAPIView(CustomListAPIView):
     serializer_class = DriverOfTheDaySerializer
 
     def get_queryset(self): 
-        return RaceData.objects.filter(driver_id=self.kwargs['name'], type='DRIVER_OF_THE_DAY_RESULT', position_number=1)
+        return DriverOfTheDayResult.objects.filter(driver=self.kwargs['name'], position_number=1)
 
 class DriverOfTheDayView(CustomListView):
     def get_api_view_object():
@@ -310,7 +310,7 @@ class DriverOpinionFormView(FormView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         race_instance = Race.objects.filter(year=self.kwargs["year"], round=self.kwargs["no"])
-        race_result_data = RaceData.objects.filter(race_id=race_instance[0].id, type="RACE_RESULT")
+        race_result_data = RaceResult.objects.filter(race=race_instance[0])
         data['race_name'] = race_instance[0].official_name
         data['drivers'] = race_result_data.values("driver").distinct()
         if self.kwargs.get('name'):

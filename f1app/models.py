@@ -145,17 +145,17 @@ class DriverFamilyRelationship(models.Model):
         db_table = 'driver_family_relationship'
 
 class DriverOfTheDayResult(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey('Race', models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey('EngineManufacturer', models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     percentage = models.TextField(blank=True, null=True)  # This field type is a guess.
 
     class Meta:
@@ -206,17 +206,17 @@ class Entrant(models.Model):
         db_table = 'entrant'
 
 class FastestLap(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey('Race', models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     lap = models.IntegerField(blank=True, null=True)
     time = models.CharField(max_length=255, blank=True, null=True)
     time_millis = models.IntegerField(blank=True, null=True)
@@ -230,17 +230,17 @@ class FastestLap(models.Model):
         db_table = 'fastest_lap'
 
 class FreePractice1Result(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey('Race', models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     time = models.CharField(max_length=255, blank=True, null=True)
     time_millis = models.IntegerField(blank=True, null=True)
     gap = models.CharField(max_length=255, blank=True, null=True)
@@ -254,17 +254,17 @@ class FreePractice1Result(models.Model):
         db_table = 'free_practice_1_result'
 
 class FreePractice2Result(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey('Race', models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     time = models.CharField(max_length=255, blank=True, null=True)
     time_millis = models.IntegerField(blank=True, null=True)
     gap = models.CharField(max_length=255, blank=True, null=True)
@@ -278,17 +278,17 @@ class FreePractice2Result(models.Model):
         db_table = 'free_practice_2_result'
 
 class FreePractice3Result(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey('Race', models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     time = models.CharField(max_length=255, blank=True, null=True)
     time_millis = models.IntegerField(blank=True, null=True)
     gap = models.CharField(max_length=255, blank=True, null=True)
@@ -302,17 +302,17 @@ class FreePractice3Result(models.Model):
         db_table = 'free_practice_3_result'
 
 class FreePractice4Result(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey('Race', models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     time = models.CharField(max_length=255, blank=True, null=True)
     time_millis = models.IntegerField(blank=True, null=True)
     gap = models.CharField(max_length=255, blank=True, null=True)
@@ -338,17 +338,17 @@ class GrandPrix(models.Model):
         db_table = 'grand_prix'
 
 class PitStop(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey('Race', models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     stop = models.IntegerField(blank=True, null=True)
     lap = models.IntegerField(blank=True, null=True)
     time = models.CharField(max_length=255, blank=True, null=True)
@@ -359,17 +359,17 @@ class PitStop(models.Model):
         db_table = 'pit_stop'
 
 class PreQualifyingResult(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey('Race', models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     time = models.CharField(max_length=255, blank=True, null=True)
     time_millis = models.IntegerField(blank=True, null=True)
     gap = models.CharField(max_length=255, blank=True, null=True)
@@ -383,17 +383,17 @@ class PreQualifyingResult(models.Model):
         db_table = 'pre_qualifying_result'
 
 class Qualifying1Result(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey('Race', models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     time = models.CharField(max_length=255, blank=True, null=True)
     time_millis = models.IntegerField(blank=True, null=True)
     gap = models.CharField(max_length=255, blank=True, null=True)
@@ -407,17 +407,17 @@ class Qualifying1Result(models.Model):
         db_table = 'qualifying_1_result'
 
 class Qualifying2Result(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey('Race', models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     time = models.CharField(max_length=255, blank=True, null=True)
     time_millis = models.IntegerField(blank=True, null=True)
     gap = models.CharField(max_length=255, blank=True, null=True)
@@ -431,17 +431,17 @@ class Qualifying2Result(models.Model):
         db_table = 'qualifying_2_result'
 
 class QualifyingResult(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey('Race', models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     time = models.CharField(max_length=255, blank=True, null=True)
     time_millis = models.IntegerField(blank=True, null=True)
     q1 = models.CharField(max_length=255, blank=True, null=True)
@@ -498,8 +498,8 @@ class RaceConstructorStanding(models.Model):
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
     points = models.TextField(blank=True, null=True)  # This field type is a guess.
 
     class Meta:
@@ -573,11 +573,6 @@ class RaceData(models.Model):
     pit_stop_time_millis = models.IntegerField(blank=True, null=True)
     driver_of_the_day_percentage = models.TextField(blank=True, null=True)  # This field type is a guess.
     
-    @property
-    def opinion(self):
-        performance_data = DriverOpinionModel.objects.filter(driver=self.driver, race=self.race)
-        return performance_data.aggregate(opinion = functions.Coalesce(Avg('rate'), 0.0))['opinion']
-    
     class Meta:
         managed = False
         db_table = 'race_data'
@@ -588,7 +583,7 @@ class RaceDriverStanding(models.Model):
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
     points = models.TextField(blank=True, null=True)  # This field type is a guess.
 
     class Meta:
@@ -604,9 +599,9 @@ class RaceResult(models.Model):
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
     driver = models.ForeignKey(Driver, models.DO_NOTHING)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     shared_car = models.BooleanField(blank=True, null=True)
     laps = models.IntegerField(blank=True, null=True)
     time = models.CharField(max_length=255, blank=True, null=True)
@@ -626,6 +621,11 @@ class RaceResult(models.Model):
     pit_stops = models.IntegerField(blank=True, null=True)
     fastest_lap = models.BooleanField(blank=True, null=True)
     driver_of_the_day = models.BooleanField(blank=True, null=True)
+    
+    @property
+    def opinion(self):
+        performance_data = DriverOpinionModel.objects.filter(driver=self.driver, race=self.race)
+        return performance_data.aggregate(opinion = functions.Coalesce(Avg('rate'), 0.0))['opinion']
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
@@ -643,8 +643,8 @@ class SeasonConstructorStanding(models.Model):
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
     points = models.TextField(blank=True, null=True)  # This field type is a guess.
 
     class Meta:
@@ -656,7 +656,7 @@ class SeasonDriverStanding(models.Model):
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
     points = models.TextField(blank=True, null=True)  # This field type is a guess.
 
     class Meta:
@@ -714,7 +714,7 @@ class SeasonEntrantDriver(models.Model):
     @property
     def results(self):
         races = Race.objects.filter(year_id = self.year, round__in=self.rounds_numeric())
-        race_data = RaceData.objects.filter(race__in=races, driver = self.driver, type='RACE_RESULT')
+        race_data = RaceResult.objects.filter(race__in=races, driver = self.driver)
         results_list = sorted(list(map(lambda x: x.position_number if x.position_number else 0, race_data)))
         results_list = map(prettify_position, results_list)
         results_dict = dict(Counter(k for k in results_list))
@@ -736,17 +736,17 @@ class SeasonEntrantTyreManufacturer(models.Model):
         db_table = 'season_entrant_tyre_manufacturer'
 
 class SprintQualifyingResult(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey(Race, models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     laps = models.IntegerField(blank=True, null=True)
     time = models.CharField(max_length=255, blank=True, null=True)
     time_millis = models.IntegerField(blank=True, null=True)
@@ -768,17 +768,17 @@ class SprintQualifyingResult(models.Model):
         db_table = 'sprint_qualifying_result'
 
 class SprintQualifyingStartingGridPosition(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey(Race, models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     grid_penalty = models.CharField(max_length=255, blank=True, null=True)
     grid_penalty_positions = models.IntegerField(blank=True, null=True)
     time = models.CharField(max_length=255, blank=True, null=True)
@@ -789,17 +789,17 @@ class SprintQualifyingStartingGridPosition(models.Model):
         db_table = 'sprint_qualifying_starting_grid_position'
 
 class StartingGridPosition(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey(Race, models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey('TyreManufacturer', models.DO_NOTHING)
     grid_penalty = models.CharField(max_length=255, blank=True, null=True)
     grid_penalty_positions = models.IntegerField(blank=True, null=True)
     time = models.CharField(max_length=255, blank=True, null=True)
@@ -829,17 +829,17 @@ class TyreManufacturer(models.Model):
         db_table = 'tyre_manufacturer'
 
 class WarmingUpResult(models.Model):
-    race_id = models.IntegerField(blank=True, null=True)
+    race = models.ForeignKey(Race, models.DO_NOTHING)
     year = models.IntegerField(blank=True, null=True)
     round = models.IntegerField(blank=True, null=True)
     position_display_order = models.IntegerField(blank=True, null=True)
     position_number = models.IntegerField(blank=True, null=True)
     position_text = models.CharField(max_length=255, blank=True, null=True)
     driver_number = models.CharField(max_length=255, blank=True, null=True)
-    driver_id = models.CharField(max_length=255, blank=True, null=True)
-    constructor_id = models.CharField(max_length=255, blank=True, null=True)
-    engine_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
-    tyre_manufacturer_id = models.CharField(max_length=255, blank=True, null=True)
+    driver = models.ForeignKey(Driver, models.DO_NOTHING)
+    constructor = models.ForeignKey(Constructor, models.DO_NOTHING)
+    engine_manufacturer = models.ForeignKey(EngineManufacturer, models.DO_NOTHING)
+    tyre_manufacturer = models.ForeignKey(TyreManufacturer, models.DO_NOTHING)
     time = models.CharField(max_length=255, blank=True, null=True)
     time_millis = models.IntegerField(blank=True, null=True)
     gap = models.CharField(max_length=255, blank=True, null=True)

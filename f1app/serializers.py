@@ -7,7 +7,7 @@ from f1app.variables import PRETTY_FAMILY_NAMES, RACE_OPINION_MODEL_FIELDS
 from rest_framework import serializers
 
 from f1app.field_options import *
-from f1app.models import Constructor, Driver, DriverFamilyRelationship, Race, RaceData, RaceOpinionModel, SeasonEntrantDriver
+from f1app.models import Constructor, Driver, DriverFamilyRelationship, DriverOfTheDayResult, QualifyingResult, Race, RaceOpinionModel, RaceResult, SeasonEntrantDriver
 
 logger = logging.getLogger("django")
 
@@ -61,7 +61,7 @@ class RaceOpinionModelSerializer(NestedSerializer, serializers.ModelSerializer):
 class RaceResultSerializer(NestedSerializer, serializers.ModelSerializer):
     race = ShallowRaceSerializer()
     class Meta:
-        model = RaceData 
+        model = RaceResult 
         fields = tuple(GRAND_PRIX_FIELDS + RESULT_FIELDS + RACE_RESULT_FIELDS)
         depth = 1
         
@@ -74,14 +74,14 @@ class ConstructorSerializer(NestedSerializer, serializers.ModelSerializer):
 class QualifyingResultSerializer(NestedSerializer, serializers.ModelSerializer):
     race = ShallowRaceSerializer()
     class Meta:
-        model = RaceData
+        model = QualifyingResult
         fields = tuple(GRAND_PRIX_FIELDS + RESULT_FIELDS + QUALIFYING_RESULT_FIELDS)
         depth = 1
 
 class DriverOfTheDaySerializer(NestedSerializer, serializers.ModelSerializer):
     race = ShallowRaceSerializer()
     class Meta:
-        model = RaceData
+        model = DriverOfTheDayResult
         fields = tuple(GRAND_PRIX_FIELDS + RESULT_FIELDS + DRIVER_OF_THE_DAY_FIELDS)
         depth = 1
 
