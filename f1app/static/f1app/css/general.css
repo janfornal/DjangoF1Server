@@ -6,6 +6,7 @@
 .navbar {
     left: auto !important;
     right: 0px;
+    z-index: 1;
 }
 
 .navbar-custom {

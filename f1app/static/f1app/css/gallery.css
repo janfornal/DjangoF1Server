@@ -1,17 +1,17 @@
 .row {
   position: relative;
+  overflow: hidden;
   margin-left: -30px;
   margin-right: -30px;
   margin-top: -30px;
   min-height: 100px;
-  z-index: -2;
 }
 
-.left-image, .middle-image, .right-image {
-    display: none;
+.left-image, .middle-image, .right-image, .transition-image {
+  display: none;
 }
 
-.column {
+.column, .transition-column {
   float: left;
   width: 33.33%;
 }
@@ -24,7 +24,7 @@
   left: 30px;
 }
 
-.prev-gallery, .next-gallery {
+.gallery-link {
   cursor: pointer;
   position: absolute;
   top: 50%;
@@ -36,20 +36,19 @@
   font-size: 18px;
   transition: 0.6s ease;
   user-select: none;
-  z-index: 1;
 }
 
-.prev-gallery {
+.prev {
   left: 0;
   border-radius: 0 3px 3px 0;
 }
 
-.next-gallery {
+.next {
   right: 0;
   border-radius: 3px 0 0 3px;
 }
 
-.prev-gallery:hover, .next-gallery:hover {
+.gallery-link:hover {
   background-color: black;
 }
 

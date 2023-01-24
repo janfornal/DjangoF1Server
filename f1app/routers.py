@@ -1,5 +1,5 @@
 import logging
-from f1app.model_tables import COMMENT_MODEL, DRIVER_OPINION_MODEL, RACE_OPINION_MODEL, RACE_VIDEOS
+from f1app.model_tables import CAR, COMMENT_MODEL, DRIVER_OPINION_MODEL, RACE_OPINION_MODEL, RACE_VIDEOS
 
 logger = logging.getLogger('django')
 
@@ -16,6 +16,7 @@ class DatabaseRouter(object):
         DRIVER_OPINION_MODEL,
         RACE_OPINION_MODEL,
         RACE_VIDEOS,
+        CAR,
     ]
     
     f1_tables = [

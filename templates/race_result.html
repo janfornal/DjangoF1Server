@@ -9,6 +9,13 @@
 
 {% block content %}
     <div class="row">
+        <div class="transition-column">
+            {% for url in image_urls %}
+                <div class="transition-image">
+                    <img src="{{ url }}" style="width:100%">
+                </div>
+            {% endfor %}
+        </div>
         <div class="column">
             {% for url in image_urls %}
                 <div class="left-image">
@@ -31,8 +38,8 @@
             {% endfor %}
         </div>
         <h1 class="race-title">{{ race.official_name }}</h1>
-        <a class="prev-gallery" onclick="plusSlides(-1)">&#10094;</a>
-        <a class="next-gallery" onclick="plusSlides(1)">&#10095;</a>
+        <a class="gallery-link prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="gallery-link next" onclick="plusSlides(1)">&#10095;</a>
     </div>
 
     <h2>Qualifying results</h2>

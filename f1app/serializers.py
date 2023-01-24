@@ -7,7 +7,7 @@ from f1app.variables import PRETTY_FAMILY_NAMES, RACE_OPINION_MODEL_FIELDS
 from rest_framework import serializers
 
 from f1app.field_options import *
-from f1app.models import Constructor, Driver, DriverFamilyRelationship, DriverOfTheDayResult, QualifyingResult, Race, RaceOpinionModel, RaceResult, SeasonEntrantDriver
+from f1app.models import Car, Constructor, Driver, DriverFamilyRelationship, DriverOfTheDayResult, QualifyingResult, Race, RaceOpinionModel, RaceResult, SeasonEntrantDriver
 
 logger = logging.getLogger("django")
 
@@ -106,6 +106,12 @@ class DriverFamilyRelationshipSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_type(obj: DriverFamilyRelationship):
         return PRETTY_FAMILY_NAMES[f'{obj.type}']
+
+class CarSerializer(NestedSerializer, serializers.ModelSerializer):
+    class Meta:
+        model = Car
+        fields = '__all__'
+        depth = 1
 
 class LoginSerializer(serializers.Serializer):
     """

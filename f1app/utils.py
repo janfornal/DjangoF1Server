@@ -24,7 +24,7 @@ def function_return(func):
 
 def open_page(link):
     try:
-        webUrl = urllib.request.urlopen(link)
+        webUrl = urllib.request.urlopen(link, timeout = 2)
     except error:
         print(error)
         return None

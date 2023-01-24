@@ -3,13 +3,13 @@ from django.db.models import Avg, functions
 from django.contrib.auth.models import User
 from collections import Counter
 
-from f1app.model_tables import COMMENT_MODEL, DRIVER_OPINION_MODEL, RACE_OPINION_MODEL, RACE_VIDEOS
+from f1app.model_tables import CAR, COMMENT_MODEL, DRIVER_OPINION_MODEL, RACE_OPINION_MODEL, RACE_VIDEOS
 from f1app.utils import prettify_position
 import logging
 
 logger = logging.getLogger('django')
 
-##### f1database
+##### f1database from inspectdb
 
 
 class Circuit(models.Model):
@@ -852,7 +852,7 @@ class WarmingUpResult(models.Model):
         managed = False  # Created from a view. Don't remove.
         db_table = 'warming_up_result'
 
-##### opinions
+##### f1database - added models
 
 class CommentModel(models.Model):
     user = models.ForeignKey(User, models.CASCADE)
@@ -903,6 +903,20 @@ class RaceVideos(models.Model):
     
     class Meta:
         db_table = RACE_VIDEOS
+        
+class Car(models.Model):
+    id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=255)
+    constructor = models.ManyToManyField(Constructor)
+    photo = models.URLField(max_length=255, null=True) 
+    debut = models.ForeignKey(Race, models.CASCADE, null=True)
+    races = models.IntegerField(null=True)
+    wins = models.IntegerField(null=True)
+    poles = models.IntegerField(null=True) 
+    fastest_laps = models.IntegerField(null=True)
+
+    class Meta:
+        db_table = CAR
     
 ##### testing 
 

@@ -34,6 +34,21 @@
                 {% endfor %}
             </dl>
         </div>
+        <div class="sidebar">
+            <div class="car-slide">
+                <p class="car-comment"></p>
+                <div class="car-image-container">
+                    <img class="car-image">
+                </div>
+            </div>
+            <a class="gallery-link prev" onclick="plusSlides(-1)">Previous</a>
+            <br>
+            <a class="gallery-link next" onclick="plusSlides(1)">Next</a>
+            <br>
+            <a class="gallery-link age" onclick="orderByAge()">Order by age</a>
+            <br>
+            <a class="gallery-link wins" onclick="orderByWins()">Order by wins</a>
+        </div>
     </div>
 
     <div id="entity_name" style="display:none"></div>
@@ -45,4 +60,6 @@
         document.getElementById("entity_name").innerHTML = 'constructor'
     </script>
     <script src="{% static 'f1app/js/redirects.js' %}"></script>
+    <script src="{% static 'f1app/js/cargallery.js' %}" defer></script>
+    {{ cars|json_script }}
 {% endblock scripts %}

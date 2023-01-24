@@ -17,8 +17,8 @@ from rest_framework import permissions, views, status, generics
 from rest_framework.response import Response
 import logging
 
-from f1app.serializers import ConstructorSerializer, DriverFamilyRelationshipSerializer, DriverOfTheDaySerializer, DriverSerializer, QualifyingResultSerializer, RaceOpinionModelSerializer, RaceResultSerializer, LoginSerializer, RaceSerializer, SeasonEntrantDriverSerializer
-from f1app.models import Constructor, Driver, DriverOfTheDayResult, QualifyingResult, Race, RaceOpinionModel, RaceResult, Season, SeasonEntrantDriver
+from f1app.serializers import CarSerializer, ConstructorSerializer, DriverFamilyRelationshipSerializer, DriverOfTheDaySerializer, DriverSerializer, QualifyingResultSerializer, RaceOpinionModelSerializer, RaceResultSerializer, LoginSerializer, RaceSerializer, SeasonEntrantDriverSerializer
+from f1app.models import Car, Constructor, Driver, DriverOfTheDayResult, QualifyingResult, Race, RaceOpinionModel, RaceResult, Season, SeasonEntrantDriver
 
 logger = logging.getLogger("django")
 # Create your views here.
@@ -173,7 +173,15 @@ class ConstructorView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['list_of_extendables'] = ['total_pole_positions', 'total_race_wins']
+        cars = Car.objects.filter(constructor=self.get_raw_object())
+        data['cars'] = CarSerializer(cars, many=True).data
         return data
+
+    def get_raw_object(self):
+        try:
+            return Constructor.objects.filter(id=self.kwargs['name'])[0]
+        except IndexError:
+            raise Http404
     
     def get_object(self): ### listapiview, według https://stackoverflow.com/questions/51169129/get-queryset-missing-1-required-positional-argument-request wystarczy listview
         constructor = Constructor.objects.filter(id=self.kwargs['name'])
