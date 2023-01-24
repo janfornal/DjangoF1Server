@@ -2,10 +2,8 @@ from googleapiclient.discovery import build
 import json
 from urllib import request
 from bs4 import BeautifulSoup
+from api_keys import google_api_key, google_cse_id, youtube_api_key
 
-google_api_key = "AIzaSyCYWwkFENwTrTstBAzelZtoCK03V3arQu0"
-google_cse_id = "c301728d33cd74777"
-youtube_api_key = 'AIzaSyAL3SKKwwKoX7I_ZIyLtMSVuiRTHtGIzz8'
 youtube = build('youtube', 'v3', developerKey=youtube_api_key)
 
 wiki_prefix = 'https://en.wikipedia.org'
