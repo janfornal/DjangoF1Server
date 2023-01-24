@@ -1,7 +1,7 @@
 import pandas as pd
 import re
 from ast import literal_eval
-from general import youtube
+from scripts.general import youtube
 from typing import Union
 
 FORMULA_1_CHANNEL = 'UCB_qr75-ydFVKSF9Dmo6izg'

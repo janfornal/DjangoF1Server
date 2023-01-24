@@ -1,8 +1,10 @@
 import inspect
+import os
 import re
 import pandas as pd
 import numpy as np
-from general import open_page, find, find_next, find_from_list, find_all, find_direct_all, wiki_prefix
+from django_project_2.settings import BASE_DIR
+from scripts.general import open_page, find, find_next, find_from_list, find_all, find_direct_all, wiki_prefix
 
 # functions returning links to wikipedia pages of formula 1 constructors
 
@@ -183,6 +185,6 @@ def collect_car_data(frame: pd.DataFrame) -> pd.DataFrame:
     frame = frame.apply(lambda row: car_scraper(row), axis = 1)
     return frame
 
-tyrrell_list = car_list_scraper([('tyrrell', 'https://en.wikipedia.org/wiki/Category:Tyrrell_Formula_One_cars')])
+tyrrell_list = car_list_scraper([('jaguar', 'https://en.wikipedia.org/wiki/Category:Jaguar_Formula_One_cars')])
 frame = pd.DataFrame(tyrrell_list, columns=['Constructor', 'Url'])
-collect_car_data(frame).to_csv('tmp/tyrrell.csv')
+collect_car_data(frame).to_csv(os.path.join(BASE_DIR, 'tmp', 'jaguar.csv'))

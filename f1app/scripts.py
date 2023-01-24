@@ -1,5 +1,4 @@
 from datetime import datetime
-from pathlib import Path
 from typing import Union
 
 from f1app.serializers import *
@@ -14,8 +13,7 @@ import numpy as np
 
 from f1app.views import ConstructorPolePositionAPIView
 from scripts.video_highlights import get_cleaned_video_data, get_race_highlights
-
-BASE_DIR = Path(__file__).resolve().parents[7]   ### when running from shell
+from django_project_2.settings import BASE_DIR
 
 def serialize_with_abstraction_level():
     race = RaceData.objects.filter(race_id=1000)
@@ -263,7 +261,7 @@ def add_car(series):
 
 @transaction.atomic
 def pass_cars_to_db():
-    frame = pd.read_csv(BASE_DIR.joinpath("tyrrell.csv"))
+    frame = pd.read_csv(BASE_DIR.joinpath('tmp', 'jaguar.csv'))
     frame['Id'] = frame['Car'].map(lambda s: s.lower())
     frame.apply(lambda row: add_car(row), axis = 1)
 

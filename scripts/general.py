@@ -2,7 +2,7 @@ from googleapiclient.discovery import build
 import json
 from urllib import request
 from bs4 import BeautifulSoup
-from api_keys import google_api_key, google_cse_id, youtube_api_key
+from scripts.api_keys import google_api_key, google_cse_id, youtube_api_key
 
 youtube = build('youtube', 'v3', developerKey=youtube_api_key)
 
