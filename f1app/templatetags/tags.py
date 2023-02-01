@@ -14,6 +14,24 @@ from rest_framework import utils
 register = template.Library()
 logger = logging.getLogger('django')
 
+class IncrementVarNode(template.Node):
+
+    def __init__(self, var_name):
+        self.var_name = var_name
+
+    def render(self,context):
+        value = context[self.var_name]
+        context[self.var_name] = value + 1
+        return u""
+
+def increment_var(parser, token):
+    parts = token.split_contents()
+    if len(parts) < 2:
+        raise template.TemplateSyntaxError("'increment' tag must be of the form:  {% increment <var_name> %}")
+    return IncrementVarNode(parts[1])
+
+register.tag('increment', increment_var)
+
 @register.filter
 def get_fields(model):
     return model._meta.get_fields()
@@ -82,6 +100,10 @@ def is_meta_field(field):
 @register.filter
 def is_relation(field):
     return field.is_relation
+
+@register.filter
+def as_selector(field):
+    return '.' + field.replace(' ', '.')
 
 #### TODO nieserializowane !!!!!
 @register.simple_tag()

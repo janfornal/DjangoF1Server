@@ -1,3 +1,28 @@
+.col-equal {
+    display: flex;
+    display: -webkit-flex;
+    flex-wrap: wrap;
+}
+
+.col-link {
+    float: right;
+    color: grey;
+    display: block;
+    margin-top: 20px; 
+    margin-bottom: 10px; 
+    height: calc(100% - 30px);
+}
+
+.col-link + .dropdown-menu {
+    right: 0;
+    left: auto;
+}
+
+.col-link:hover {
+    color: black;
+    text-decoration: none;
+}
+
 .table-custom {
     overflow: scroll;
     width: 80%;

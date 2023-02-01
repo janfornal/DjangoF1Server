@@ -8,49 +8,31 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="transition-column">
-            {% for url in image_urls %}
-                <div class="transition-image">
-                    <img src="{{ url }}" style="width:100%">
-                </div>
-            {% endfor %}
-        </div>
-        <div class="column">
-            {% for url in image_urls %}
-                <div class="left-image">
-                    <img src="{{ url }}" style="width:100%">
-                </div>
-            {% endfor %}
-        </div>
-        <div class="column">
-            {% for url in image_urls %}
-                <div class="middle-image">
-                    <img src="{{ url }}" style="width:100%">
-                </div>
-            {% endfor %}
-        </div>
-        <div class="column">
-            {% for url in image_urls %}
-                <div class="right-image">
-                    <img src="{{ url }}" style="width:100%">
-                </div>
-            {% endfor %}
-        </div>
+    {% load tags %}
+    <div class="gallery-row">
+        {% if image_urls %}
+            <div class="gallery">
+                {% for url in image_urls %}
+                    <div class="transition-image">
+                        <img src="{{ url }}" style="width:100%">
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         <h1 class="race-title">{{ race.official_name }}</h1>
-        <a class="gallery-link prev" onclick="plusSlides(-1)">&#10094;</a>
-        <a class="gallery-link next" onclick="plusSlides(1)">&#10095;</a>
+        {% if image_urls %}
+            <a class="gallery-link prev" onclick="plusSlides(-1)">&#10094;</a>
+            <a class="gallery-link next" onclick="plusSlides(1)">&#10095;</a>
+        {% endif %}
     </div>
 
-    <h2>Qualifying results</h2>
-
-    {% with object_list=qualifying_list additional_class="table-podium" %}
+    {% comment %} <nav class="navbar navbar-inverse navbar-custom">   {% endcomment %}
+        {% comment %} <div class="container-fluid">   {% endcomment %}
+    {% with object_list=qualifying_list additional_class="table-podium table-qualifying" %}
         {% include "list_table.html" %}
     {% endwith %}
 
-    <h2>Race results</h2>
-
-    {% with object_list=race_list additional_class="table-podium" %}
+    {% with object_list=race_list additional_class="table-podium table-race" %}
         {% include "list_table.html" %}
     {% endwith %}
 {% endblock %}

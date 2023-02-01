@@ -12,7 +12,7 @@ from django.contrib.auth import login
 from django.views.generic.edit import FormView
 from f1app.utils import get_image_links
 import json
-from f1app.variables import NEW_RACE_OPINION
+from f1app.variables import META_FIELDS, NEW_RACE_OPINION
 from rest_framework import permissions, views, status, generics
 from rest_framework.response import Response
 import logging

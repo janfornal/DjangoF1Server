@@ -1,7 +1,38 @@
 {% load static %}
 {% load tags %}
 
-<div style="overflow: scroll;"> 
+{% if 'table-qualifying' in additional_class or 'table-race' in additional_class %}
+    <br>
+    <div class="container">
+        <div class="row col-equal">
+            <div class="col-xs-8">
+                {% if 'table-qualifying' in additional_class %}
+                    <h3>Qualifying results</h3>
+                {% endif %}
+                {% if 'table-race' in additional_class %}
+                    <h3>Race results</h3>
+                {% endif %}
+            </div>
+            <div class="col-xs-4">
+                <a class="col-link dropdown-toggle" data-toggle="dropdown">Select columns <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                {% with cnt=1 %}    
+                {% for value in object_list|column_names %}
+                    {% if value|is_meta_field is False %}
+                    <li><a>
+                        <input type="checkbox" onclick="hideColumn('{{additional_class|as_selector}}', {{cnt}})" checked/>&nbsp;{{ value|pretty_name }}
+                    </a></li>
+                    {% increment cnt %}
+                    {% endif %}
+                {% endfor %}
+                {% endwith %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<div style="overflow: scroll; border: 2px; border-style: solid;"> 
     <table class="table table-dark table-custom {{additional_class}}">
     {% if object_list|length > 0 %} 
         <tr>
@@ -34,3 +65,4 @@
 </div>
 {% comment %} how to pass it to scripts?? {% endcomment %}
 <script src="{% static 'f1app/js/redirects.js' %}"></script>
+<script src="{% static 'f1app/js/tablescripts.js' %}"></script>
